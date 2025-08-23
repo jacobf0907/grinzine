@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRIN - Issues</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+      <a href="index.html">
+        <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
+      </a>
+    <h1>Issues</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="issues.html">Issues</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="issues">
+
+      <!-- Issue 1 -->
+      <article class="issue">
+        <img src="grinzine_issue1_cover.PNG" alt="Issue 1 Cover">
+        <button 
+          type="button" 
+          class="paywall-btn checkout-btn" 
+          data-price-id="price_1RugTbJulbntxSe8oz8G1wql" 
+          style="display:block; margin:0 auto;">
+          Unlock This Issue
+        </button>
+      </article>
+
+      <!--
+      Example: add Issue 2
+      <article class="issue">
+        <img src="grinzine_issue2_cover.PNG" alt="Issue 2 Cover">
+        <button 
+          type="button" 
+          class="paywall-btn checkout-btn" 
+          data-price-id="price_XXXXXXXXXXXX" 
+          style="display:block; margin:0 auto;">
+          Unlock This Issue
+        </button>
+      </article>
+      -->
+
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 GRIN • For the minds of the disturbed</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.checkout-btn').forEach(btn => {
+      btn.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const priceId = btn.getAttribute('data-price-id');
+
+        btn.disabled = true;
+        btn.textContent = 'Redirecting...';
+
+        try {
+          const response = await fetch('https://grinzine.onrender.com/create-checkout-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ priceId })
+          });
+
+          const data = await response.json();
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            alert('Failed to create checkout session.');
+            btn.disabled = false;
+            btn.textContent = 'Unlock This Issue';
+          }
+        } catch (error) {
+          console.error('Error creating checkout session:', error);
+          alert('Error creating checkout session.');
+          btn.disabled = false;
+          btn.textContent = 'Unlock This Issue';
+        }
+      });
+    });
+  </script>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
