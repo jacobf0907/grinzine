@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issue Unlocked - GRIN</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- PDF.js library for flipbook-style viewer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    #pdf-container {
+      width: 80%;
+      margin: 2rem auto;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      overflow: auto;
+      background: #fff;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-bottom: 1px solid #ddd;
+    }
+    .nav-buttons {
+      text-align: center;
+      margin: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html">
+      <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
+    </a>
+    <h1>Issue Unlocked</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="issues.html">Issues</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Enjoy your issue!</h2>
+      <div id="pdf-container"></div>
+      <div class="nav-buttons">
+        <button id="prev-page">Previous Page</button>
+        <span id="page-info"></span>
+        <button id="next-page">Next Page</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 GRIN • For the minds of the disturbed</p>
+  </footer>
+
+<script>
+  // Get session_id from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('session_id');
+
+  if (sessionId) {
+    fetch(`/purchase-status/${sessionId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.pdfPath) {
+          loadPDF(data.pdfPath);
+        } else {
+          document.getElementById('pdf-container').innerHTML = '<p>Error: could not load purchase details.</p>';
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching purchase status:', err);
+        document.getElementById('pdf-container').innerHTML = '<p>Error loading your purchase.</p>';
+      });
+  }
+
+  function loadPDF(pdfUrl) {
+    let pdfDoc = null,
+        pageNum = 1,
+        scale = 1.2,
+        canvas = document.createElement('canvas'),
+        ctx = canvas.getContext('2d');
+
+    document.getElementById('pdf-container').appendChild(canvas);
+
+    pdfjsLib.getDocument(pdfUrl).promise.then((doc) => {
+      pdfDoc = doc;
+      renderPage(pageNum);
+    });
+
+    function renderPage(num) {
+      pdfDoc.getPage(num).then((page) => {
+        const viewport = page.getViewport({ scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        page.render({ canvasContext: ctx, viewport });
+        document.getElementById('page-info').textContent = `Page ${num} of ${pdfDoc.numPages}`;
+      });
+    }
+
+    document.getElementById('prev-page').addEventListener('click', () => {
+      if (pageNum <= 1) return;
+      pageNum--;
+      renderPage(pageNum);
+    });
+
+    document.getElementById('next-page').addEventListener('click', () => {
+      if (pageNum >= pdfDoc.numPages) return;
+      pageNum++;
+      renderPage(pageNum);
+    });
+  }
+</script>
+
+</body>
+</html>
