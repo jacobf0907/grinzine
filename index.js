@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const cors = requrie('cors');
+const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
