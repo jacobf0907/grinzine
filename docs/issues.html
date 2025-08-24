@@ -36,6 +36,11 @@
           style="display:block; margin:0 auto;">
           Unlock This Issue
         </button>
+
+        <!-- Hidden link that appears after purchase -->
+        <a id="link" href="#" target="_blank" style="display: none; text-align: center; margin-top: 1rem;">
+          View Your Issue
+        </a>
       </article>
 
       <!--
@@ -79,12 +84,13 @@
           if (data.url) {
             window.location.href = data.url;
           } else {
-            alert('Failed to create checkout session.');
+            console.error("No URL in response", data);
             btn.disabled = false;
             btn.textContent = 'Unlock This Issue';
           }
-        } catch (error) {
-          console.error('Error creating checkout session:', error);
+        } 
+        catch (err) {
+          console.error('Error creating checkout session:', err);
           alert('Error creating checkout session.');
           btn.disabled = false;
           btn.textContent = 'Unlock This Issue';
