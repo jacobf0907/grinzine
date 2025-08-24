@@ -80,7 +80,7 @@
             body: JSON.stringify({ priceId })
           });
 
-          const data = await response.json();
+          const data = await res.json();
           if (data.url) {
             window.location.href = data.url;
           } else {
