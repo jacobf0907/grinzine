@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRIN</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+      <a href="index.html">
+        <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
+      </a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="issues.html">Issues</a>
+    </nav>
+  </header>
+
+  <body>
+  <h2>Login</h2>
+  <form id="login-form">
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button type="submit">Login</button>
+  </form>
+
+  <p>Don’t have an account? <a href="signup.html">Sign up</a></p>
+
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const API_BASE_URL =
+        window.location.hostname === "localhost"
+            ? "http://localhost:4242"
+            : "https://grinzine.onrender.com";
+
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include" // 🔑 ensures cookie is stored
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        window.location.href = "my_library.html";
+      } else {
+        alert(data.error || "Error logging in");
+      }
+    });
+  </script>
+</body>
+  <footer>
+    <p>© 2025 GRIN • For the minds of the disturbed</p>
+  </footer>
+</body>
+</html>

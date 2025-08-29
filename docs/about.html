@@ -17,9 +17,10 @@
       </a>
     </h1>
     <nav>
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="issues.html">Issues</a>    
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="issues.html">Issues</a>
+  <span id="nav-auth" style="float:right;"></span>
     </nav>
       </header>
 
@@ -36,6 +37,30 @@
   </body>
 
   <footer>
+  <script>
+    // Show login/signup or logged-in message with email
+    async function updateNavAuth() {
+      const API_BASE_URL = window.location.hostname === "localhost"
+        ? "http://localhost:4242"
+        : "https://grinzine.onrender.com";
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            document.getElementById("nav-auth").textContent = `Logged in as ${data.email}`;
+          } else {
+            document.getElementById("nav-auth").textContent = `Logged in`;
+          }
+        } else {
+          throw new Error();
+        }
+      } catch {
+        document.getElementById("nav-auth").innerHTML = `<button onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+      }
+    }
+    updateNavAuth();
+  </script>
     <p>© 2025 GRIN • For the minds of the disturbed</p>
   </footer>
 </body>

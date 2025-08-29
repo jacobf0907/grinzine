@@ -6,3 +6,7 @@ node_modules/
 
 # Optional: Ignore logs
 *.log
+/generated/prisma
+
+# Ignore pdf files
+pdfs/

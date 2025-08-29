@@ -17,9 +17,10 @@
       </a>
     <h1>Issues</h1>
     <nav>
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="issues.html">Issues</a>
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="issues.html">Issues</a>
+  <span id="nav-auth" style="float:right;"></span>
     </nav>
   </header>
 
@@ -36,11 +37,6 @@
           style="display:block; margin:0 auto;">
           Unlock This Issue
         </button>
-
-        <!-- Hidden link that appears after purchase -->
-        <a id="link" href="#" target="_blank" style="display: none; text-align: center; margin-top: 1rem;">
-          View Your Issue
-        </a>
       </article>
 
       <!--
@@ -61,44 +57,105 @@
   </main>
 
   <footer>
+  <script>
+  </script>
     <p>© 2025 GRIN • For the minds of the disturbed</p>
   </footer>
 
   <script>
-    document.querySelectorAll('.checkout-btn').forEach(btn => {
-      btn.addEventListener('click', async (event) => {
-        event.preventDefault();
-        const priceId = btn.getAttribute('data-price-id');
+  // Set API base URL depending on environment
+  const API_BASE_URL =
+    window.location.hostname === "localhost"
+      ? "http://localhost:4242"
+      : "https://grinzine.onrender.com";
 
-        btn.disabled = true;
-        btn.textContent = 'Redirecting...';
+  document.querySelectorAll('.checkout-btn').forEach(btn => {
+    btn.addEventListener('click', async (event) => {
+      event.preventDefault();
 
-        try {
-          const response = await fetch('https://grinzine.onrender.com/create-checkout-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ priceId })
-          });
+      const priceId = btn.getAttribute('data-price-id');
 
-          const data = await response.json();
-          if (data.url) {
-            window.location.href = data.url; //redirect to stripe checkout
-          } else {
-            console.error("No URL in response", data);
-            btn.disabled = false;
-            btn.textContent = 'Unlock This Issue';
-          }
-        } 
-        catch (err) {
-          console.error('Error creating checkout session:', err);
+      // Check login status by calling backend
+      let loggedIn = false;
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+        if (res.ok) {
+          loggedIn = true;
+        }
+      } catch {}
+
+      if (!loggedIn) {
+        // Store intended unlock in sessionStorage
+        sessionStorage.setItem('pendingUnlock', priceId);
+        window.location.href = "login.html";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Redirecting...';
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ priceId })
+        });
+
+        const data = await response.json();
+        if (data.url) {
+          window.location.href = data.url; //redirect to stripe checkout
+        } else {
           alert('Error creating checkout session.');
           btn.disabled = false;
           btn.textContent = 'Unlock This Issue';
         }
-      });
+      } 
+      catch (err) {
+        console.error('Error creating checkout session:', err);
+        alert('Error creating checkout session.');
+        btn.disabled = false;
+        btn.textContent = 'Unlock This Issue';
+      }
     });
-  </script>
+  });
+
+  // After login, auto-trigger unlock if pending
+  window.addEventListener('DOMContentLoaded', () => {
+    const pendingUnlock = sessionStorage.getItem('pendingUnlock');
+    if (pendingUnlock) {
+      const btn = document.querySelector(`.checkout-btn[data-price-id="${pendingUnlock}"]`);
+      if (btn) {
+        sessionStorage.removeItem('pendingUnlock');
+        btn.click();
+      }
+    }
+  });
+
+</script>
 
   <script src="scripts.js"></script>
-</body>
-</html>
+  <script>
+    // Show login/signup or logged-in message with email
+    async function updateNavAuth() {
+      const API_BASE_URL = window.location.hostname === "localhost"
+        ? "http://localhost:4242"
+        : "https://grinzine.onrender.com";
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            document.getElementById("nav-auth").textContent = `Logged in as ${data.email}`;
+          } else {
+            document.getElementById("nav-auth").textContent = `Logged in`;
+          }
+        } else {
+          throw new Error();
+        }
+      } catch {
+        document.getElementById("nav-auth").innerHTML = `<button onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+      }
+    }
+    updateNavAuth();
+  </script>

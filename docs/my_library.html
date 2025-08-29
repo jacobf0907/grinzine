@@ -3,19 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment Successful - GRIN</title>
+  <title>GRIN - Issues</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
-
+    <style>
+    .issue {
+        margin-bottom: 40px;
+    }
+    iframe {
+        width: 100%;
+        height: 600px;
+        border: none;
+        margin-top: 10px;
+    }
+    </style>
 </head>
+
 <body>
   <header>
-    <a href="index.html">
-      <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
-    </a>
-    <h1>Payment Successful</h1>
+      <a href="index.html">
+        <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
+      </a>
+    <h1>Purchased Issues</h1>
     <nav>
   <a href="index.html">Home</a>
   <a href="about.html">About</a>
@@ -24,13 +35,48 @@
     </nav>
   </header>
 
-  <main>
-    <section>
-      <h2>Thank you for your purchase. This issue is now available in your library.</h2>
-      <button onclick="window.location.href='my_library.html'">Go to My Library</button>
-    </section>
-  </main>
+  <body>
+  <h2>My Library</h2>
+  <div id="library"></div>
 
+  <script>
+  const API_BASE_URL =
+    window.location.hostname === "localhost"
+      ? "http://localhost:4242"
+      : "https://grinzine.onrender.com";
+
+  async function loadLibrary() {
+    const res = await fetch(`${API_BASE_URL}/auth/my-library`, {
+      credentials: "include"
+    });
+    if (res.status === 401) {
+      alert("You must log in first");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const data = await res.json();
+    const libraryDiv = document.getElementById("library");
+
+    if (data.purchases.length === 0) {
+      libraryDiv.innerHTML = "<p>No purchases yet.</p>";
+      return;
+    }
+
+    // Display purchased issues
+    data.purchases.forEach(p => {
+      const issueDiv = document.createElement("div");
+      issueDiv.innerHTML = `
+        <h3>${p.issue.title}</h3>
+        <a href="${p.issue.pdfPath}" target="_blank">Read Issue</a>
+      `;
+      libraryDiv.appendChild(issueDiv);
+    });
+  }
+
+  loadLibrary();
+</script>
+</body>
   <footer>
   <script>
     // Show login/signup or logged-in message with email
@@ -58,6 +104,5 @@
   </script>
     <p>© 2025 GRIN • For the minds of the disturbed</p>
   </footer>
-
 </body>
 </html>

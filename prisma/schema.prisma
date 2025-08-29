@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// to add postgres later, change provider below to "postgresql"
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  purchases Purchase[]
+}
+
+model Issue {
+  id        Int       @id @default(autoincrement())
+  title     String
+  pdfPath   String
+  purchases Purchase[]
+}
+
+model Purchase {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  issueId   Int
+  createdAt DateTime @default(now())
+  stripeId  String   @unique
+}
