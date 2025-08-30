@@ -8,6 +8,9 @@ RUN npm install --production
 
 COPY . .
 
+# Generate Prisma client
+RUN npx prisma generate
+
 ENV PORT=8080
 EXPOSE 8080
 
