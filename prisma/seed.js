@@ -22,7 +22,7 @@ async function main() {
       }
       */
     ],
-   skipDuplicates: true // avoids duplicates if run multiple times
+  skipDuplicates: true // avoids duplicates if run multiple times
   });
 
   console.log("✅ Database seeded.");
