@@ -132,6 +132,64 @@
     }
   });
 
+  // Only check login status when unlock button is clicked
+  document.querySelectorAll('.checkout-btn').forEach(btn => {
+    btn.addEventListener('click', async (event) => {
+      event.preventDefault();
+      const priceId = btn.getAttribute('data-price-id');
+
+      // Check login status by calling backend
+      let loggedIn = false;
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          loggedIn = !!data.email;
+        }
+      } catch {}
+
+      if (!loggedIn) {
+        // Store intended unlock in sessionStorage
+        sessionStorage.setItem('pendingUnlock', priceId);
+        window.location.href = "login.html";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Redirecting...';
+
+      // Proceed to checkout
+      try {
+        const res = await fetch(`${API_BASE_URL}/create-checkout-session`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ priceId }),
+          credentials: "include"
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          window.location.href = data.url;
+        } else {
+          alert(data.error || "Error creating checkout session");
+        }
+      } catch (err) {
+        alert("Error connecting to server");
+      }
+    });
+  });
+
+  // After login, auto-trigger unlock if pending
+  window.addEventListener('DOMContentLoaded', () => {
+    const pendingUnlock = sessionStorage.getItem('pendingUnlock');
+    if (pendingUnlock) {
+      const btn = document.querySelector(`.checkout-btn[data-price-id="${pendingUnlock}"]`);
+      if (btn) {
+        btn.click();
+        sessionStorage.removeItem('pendingUnlock');
+      }
+    }
+  });
+
 </script>
 
   <script src="scripts.js"></script>
