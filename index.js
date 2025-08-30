@@ -15,7 +15,7 @@ app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
 
 
 const ALLOWED_ORIGINS = [
-  process.env.ALLOWED_ORIGIN,
+  'https://jacobf0907.github.io',
   `http://localhost:${PORT}` // use the PORT variable for localhost
 ];
 
