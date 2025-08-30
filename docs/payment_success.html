@@ -33,7 +33,7 @@
 
   <footer>
   <script>
-    // Show login/signup or logged-in message with email
+    // Show login/signup or logged-in message with email and dropdown for logout
     async function updateNavAuth() {
       const API_BASE_URL = window.location.hostname === "localhost"
         ? "http://localhost:4242"
@@ -43,7 +43,27 @@
         if (res.ok) {
           const data = await res.json();
           if (data.email) {
-            document.getElementById("nav-auth").textContent = `Logged in as ${data.email}`;
+            document.getElementById("nav-auth").innerHTML = `
+              <div style="display:inline-block;position:relative;">
+                <span id="user-email" style="cursor:pointer;">Logged in as ${data.email} ▼</span>
+                <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;">
+                  <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;">Logout</button>
+                </div>
+              </div>
+            `;
+            document.getElementById("user-email").onclick = function() {
+              const dd = document.getElementById("logout-dropdown");
+              dd.style.display = dd.style.display === "block" ? "none" : "block";
+            };
+            document.getElementById("logout-btn").onclick = async function() {
+              await fetch(`${API_BASE_URL}/auth/logout`, { method: "POST", credentials: "include" });
+              window.location.href = "login.html";
+            };
+            document.addEventListener("click", function(e) {
+              if (!e.target.closest("#nav-auth")) {
+                document.getElementById("logout-dropdown").style.display = "none";
+              }
+            });
           } else {
             document.getElementById("nav-auth").textContent = `Logged in`;
           }
@@ -55,6 +75,20 @@
       }
     }
     updateNavAuth();
+
+    // Auto-logout after inactivity (30 minutes)
+    let logoutTimer;
+    function resetLogoutTimer() {
+      clearTimeout(logoutTimer);
+      logoutTimer = setTimeout(() => {
+        fetch(`${window.location.hostname === "localhost" ? "http://localhost:4242" : "https://grinzine.fly.dev"}/auth/logout`, { method: "POST", credentials: "include" });
+        window.location.href = "login.html";
+      }, 30 * 60 * 1000); // 30 minutes
+    }
+    ["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(evt => {
+      window.addEventListener(evt, resetLogoutTimer);
+    });
+    resetLogoutTimer();
   </script>
     <p>© 2025 GRIN • For the minds of the disturbed</p>
   </footer>
