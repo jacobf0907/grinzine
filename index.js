@@ -21,10 +21,13 @@ const ALLOWED_ORIGINS = [
 
 const corsOptions = {
   origin: function(origin, callback) {
+    console.log('Request Origin:', origin);
+    console.log('Allowed Origins:', ALLOWED_ORIGINS);
     if (!origin) return callback(null, true);
     if (ALLOWED_ORIGINS.includes(origin)) {
       return callback(null, true);
     }
+    console.warn('CORS blocked for origin:', origin);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -34,6 +37,15 @@ const corsOptions = {
 app.use((req, res, next) => {
   if (req.originalUrl === '/webhook') return next(); // keep raw body for Stripe
   cors(corsOptions)(req, res, next);
+});
+
+// Error handler for CORS errors
+app.use((err, req, res, next) => {
+  if (err.message === 'Not allowed by CORS') {
+    res.status(403).json({ error: 'CORS error: Origin not allowed' });
+  } else {
+    next(err);
+  }
 });
 
 // Parse cookies globally for all routes
