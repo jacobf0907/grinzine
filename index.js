@@ -6,8 +6,33 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const app = express();
+
 app.use(express.static(path.join(__dirname, 'docs')));
 app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
+
+// Allow your GitHub Pages site to call the API
+const ALLOWED_ORIGINS = [
+  process.env.ALLOWED_ORIGIN,
+  `http://localhost:${PORT}` // use the PORT variable for localhost
+];
+
+const corsOptions = {
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use((req, res, next) => {
+  if (req.originalUrl === '/webhook') return next(); // keep raw body for Stripe
+  cors(corsOptions)(req, res, next);
+});
+
 // Parse cookies globally for all routes
 app.use(require('cookie-parser')());
 // Parse JSON bodies globally (except for /webhook)
@@ -39,25 +64,6 @@ const user = await prisma.user.findUnique({ where: { email: "test@example.com" }
 
 
 // Allow your GitHub Pages site to call the API
-const ALLOWED_ORIGINS = [
-  process.env.ALLOWED_ORIGIN,
-  `http://localhost:${PORT}` // use the PORT variable for localhost
-];
-
-app.use((req, res, next) => {
-  if (req.originalUrl === '/webhook') return next(); // keep raw body for Stripe
-  cors({
-    origin: function(origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin) return callback(null, true);
-      if (ALLOWED_ORIGINS.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error('Not allowed by CORS'));
-    },
-    credentials: true
-  })(req, res, next);
-});
 
 
 // Map Stripe Price IDs to issue info
