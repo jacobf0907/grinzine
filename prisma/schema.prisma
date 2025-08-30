@@ -1,11 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
-
-// to add postgres later, change provider below to "postgresql"
 
 datasource db {
   provider = "postgresql"
@@ -13,25 +8,25 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
   password  String
   purchases Purchase[]
 }
 
 model Issue {
-  id        Int       @id @default(autoincrement())
-  title     String    @unique
+  id        Int        @id @default(autoincrement())
+  title     String     @unique
   pdfPath   String
   purchases Purchase[]
 }
 
 model Purchase {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int
-  issue     Issue    @relation(fields: [issueId], references: [id])
   issueId   Int
   createdAt DateTime @default(now())
   stripeId  String   @unique
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
