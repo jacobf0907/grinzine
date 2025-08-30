@@ -187,8 +187,8 @@ app.post('/create-checkout-session', requireAuth, async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}/payment_success.html`,
-      cancel_url: `${baseUrl}/payment_cancel.html`,
+      success_url: `${baseUrl}/docs/payment_success.html`,
+      cancel_url: `${baseUrl}/docs/payment_cancel.html`,
     });
     res.json({ url: session.url });
   } catch (err) {
