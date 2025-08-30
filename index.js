@@ -14,7 +14,6 @@ app.use(express.static(path.join(__dirname, 'docs')));
 app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
 
 
-// Allow your GitHub Pages site to call the API
 const ALLOWED_ORIGINS = [
   process.env.ALLOWED_ORIGIN,
   `http://localhost:${PORT}` // use the PORT variable for localhost
@@ -41,80 +40,6 @@ app.use((req, res, next) => {
 app.use(require('cookie-parser')());
 // Parse JSON bodies globally (except for /webhook)
 app.use(express.json());
-
-
-
-//mount router in main server
-const { router: authRoutes, requireAuth } = require('./auth');
-app.use('/auth', authRoutes);
-
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-
-module.exports = prisma;
-
-async function testPrisma() {
-// Create a user
-await prisma.user.create({
-  data: { email: "test@example.com", password: "hashedpassword" }
-});
-
-// Find user
-const user = await prisma.user.findUnique({ where: { email: "test@example.com" } });
-  console.log(user);
-}
-
-
-// Allow your GitHub Pages site to call the API
-
-
-// Map Stripe Price IDs to issue info
-const ISSUE_MAP = {
-  'price_1RugTbJulbntxSe8oz8G1wql': {
-    name: 'GRIN Zine - Issue 1',
-    pdfPath: '/pdfs/grin-magazine-volume-one-web.pdf'
-  },
-// add new issues here
-};
-
-
-// Create checkout session route
-app.post('/create-checkout-session', requireAuth, async (req, res) => {
-  try {
-    const { priceId } = req.body;
-    if (!priceId || !ISSUE_MAP[priceId]) {
-      return res.status(400).json({ error: 'Invalid or unknown priceId' });
-    }
-    // Determine base URL for redirect
-    const isLocal = req.headers.origin && req.headers.origin.includes('localhost');
-    const baseUrl = isLocal
-      ? `http://localhost:${PORT}`
-      : process.env.ALLOWED_ORIGIN;
-
-    // Get user from JWT
-    const user = await prisma.user.findUnique({ where: { id: req.userId } });
-    if (!user) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      customer_email: user.email,
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      success_url: `${baseUrl}/payment_success.html`,
-      cancel_url: `${baseUrl}/payment_cancel.html`,
-    });
-    res.json({ url: session.url });
-  } catch (err) {
-    console.error('Error creating checkout session:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // Webhook handler (must use raw body)
 app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
@@ -197,6 +122,82 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) =
 
   res.sendStatus(200);
 });
+
+
+
+//mount router in main server
+const { router: authRoutes, requireAuth } = require('./auth');
+app.use('/auth', authRoutes);
+
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+module.exports = prisma;
+
+async function testPrisma() {
+// Create a user
+await prisma.user.create({
+  data: { email: "test@example.com", password: "hashedpassword" }
+});
+
+// Find user
+const user = await prisma.user.findUnique({ where: { email: "test@example.com" } });
+  console.log(user);
+}
+
+
+// Allow your GitHub Pages site to call the API
+
+
+// Map Stripe Price IDs to issue info
+const ISSUE_MAP = {
+  'price_1RugTbJulbntxSe8oz8G1wql': {
+    name: 'GRIN Zine - Issue 1',
+    pdfPath: '/pdfs/grin-magazine-volume-one-web.pdf'
+  },
+// add new issues here
+};
+
+
+// Create checkout session route
+app.post('/create-checkout-session', requireAuth, async (req, res) => {
+  try {
+    const { priceId } = req.body;
+    if (!priceId || !ISSUE_MAP[priceId]) {
+      return res.status(400).json({ error: 'Invalid or unknown priceId' });
+    }
+    // Determine base URL for redirect
+    const isLocal = req.headers.origin && req.headers.origin.includes('localhost');
+    const baseUrl = isLocal
+      ? `http://localhost:${PORT}`
+      : process.env.ALLOWED_ORIGIN;
+
+    // Get user from JWT
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      customer_email: user.email,
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: `${baseUrl}/payment_success.html`,
+      cancel_url: `${baseUrl}/payment_cancel.html`,
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('Error creating checkout session:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 // Frontend will call this after redirect with ?session_id=...
 app.get('/purchase-status/:sessionId', (req, res) => {
