@@ -6,9 +6,13 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const app = express();
+// port 4242 for local development, port will be set by Render for production
+const PORT = process.env.PORT || 4242;
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 
 app.use(express.static(path.join(__dirname, 'docs')));
 app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
+
 
 // Allow your GitHub Pages site to call the API
 const ALLOWED_ORIGINS = [
@@ -38,9 +42,7 @@ app.use(require('cookie-parser')());
 // Parse JSON bodies globally (except for /webhook)
 app.use(express.json());
 
-// port 4242 for local development, port will be set by Render for production
-const PORT = process.env.PORT || 4242;
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+
 
 //mount router in main server
 const { router: authRoutes, requireAuth } = require('./auth');
