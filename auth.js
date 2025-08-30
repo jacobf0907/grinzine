@@ -65,7 +65,11 @@ router.post('/login', async (req, res) => {
   const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "7d" });
 
   // Store in cookie
-  res.cookie("token", token, { httpOnly: true, secure: false }); // secure:true in production
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: true, // must be true for cross-site cookies on HTTPS
+    sameSite: 'none' // allow cross-origin
+  });
   res.json({ message: "Logged in" });
 });
 
