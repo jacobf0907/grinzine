@@ -1,3 +1,18 @@
+/* Nav container for centering */
+/* Nav container for centering */
+.nav-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  margin: 0 auto;
+}
+nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 32px;
+}
 /* Responsive styles for mobile and small screens */
 @media (max-width: 700px) {
   header {
@@ -16,11 +31,12 @@
     margin: 10px 0;
     align-items: center;
   }
-  nav a {
-    font-size: 1em;
-    padding: 8px 0;
-    width: 100%;
-    text-align: center;
+  nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
   }
   .centered-login {
     min-height: 50vh;
@@ -91,10 +107,12 @@ nav a:hover {
 }
 nav {
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 32px;
   margin: 20px 0;
+  width: 100%;
 }
 nav a {
   text-decoration: none;
@@ -103,13 +121,29 @@ nav a {
   padding: 6px 12px;
   border-radius: 4px;
   transition: background 0.2s;
+  display: inline-block;
 }
 nav a:hover {
   background: #f0f0f0;
 }
 /* Ensure nav-auth stays on the right */
-#nav-auth {
-  margin-left: auto;
+
+@media (max-width: 700px) {
+  nav {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    margin: 10px 0;
+  }
+  nav a {
+    font-size: 1em;
+    padding: 8px 0;
+    width: 100%;
+    text-align: center;
+    display: block;
+  }
 }
 
 .hero img {
