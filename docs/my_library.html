@@ -37,62 +37,115 @@
   <body>
   <h2>My Library</h2>
   <div id="library"></div>
-  <div class="flipbook-container" id="flipbook-container" style="display:none;"></div>
+  <div class="flipbook-container" id="flipbook-container" style="display:none;">
+    <h3 id="pdf-title"></h3>
+    <canvas id="pdf-canvas" style="width:100%;max-width:900px;"></canvas>
+    <div id="pdf-controls" style="margin:20px 0; display:flex; justify-content:center; gap:20px;">
+      <button id="prev-page" style="padding:8px 16px;">Previous</button>
+      <span id="page-info"></span>
+      <button id="next-page" style="padding:8px 16px;">Next</button>
+    </div>
+  </div>
 
-  <script>
-  const API_BASE_URL =
-    window.location.hostname === "localhost"
-      ? "http://localhost:4242"
-      : "https://grinzine.fly.dev";
+  <script type="module">
+    const API_BASE_URL =
+      window.location.hostname === "localhost"
+        ? "http://localhost:4242"
+        : "https://grinzine.fly.dev";
 
-  let flipbookInstance = null;
+    import * as pdfjsLib from './pdfjs/build/pdf.mjs';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs/build/pdf.worker.mjs';
 
-  async function loadLibrary() {
-    const res = await fetch(`${API_BASE_URL}/auth/my-library`, {
-      credentials: "include"
-    });
-    if (res.status === 401) {
-      alert("You must log in first");
-      window.location.href = "login.html";
-      return;
+    async function loadLibrary() {
+      const res = await fetch(`${API_BASE_URL}/auth/my-library`, {
+        credentials: "include"
+      });
+      if (res.status === 401) {
+        alert("You must log in first");
+        window.location.href = "login.html";
+        return;
+      }
+
+      const data = await res.json();
+      const libraryDiv = document.getElementById("library");
+
+      if (data.purchases.length === 0) {
+        libraryDiv.innerHTML = "<p>No purchases yet.</p>";
+        return;
+      }
+
+      // Display only unique issues as clickable links
+      libraryDiv.innerHTML = "<h3>Select an issue to view:</h3>";
+      const seen = new Set();
+      data.purchases.forEach((p) => {
+        if (seen.has(p.issue.title)) return;
+        seen.add(p.issue.title);
+        const link = document.createElement("a");
+        link.href = "#";
+        link.textContent = p.issue.title;
+        link.style.display = "block";
+        link.style.marginBottom = "10px";
+        link.onclick = function(e) {
+          e.preventDefault();
+          showFlipbook(p.issue.pdfPath, p.issue.title);
+        };
+        libraryDiv.appendChild(link);
+      });
     }
 
-    const data = await res.json();
-    const libraryDiv = document.getElementById("library");
 
-    if (data.purchases.length === 0) {
-      libraryDiv.innerHTML = "<p>No purchases yet.</p>";
-      return;
+    let currentPdf = null;
+    let currentPageNum = 1;
+    let totalPages = 1;
+
+    async function showFlipbook(pdfPath, title) {
+      const container = document.getElementById("flipbook-container");
+      container.style.display = "block";
+      document.getElementById("pdf-title").textContent = title;
+      currentPageNum = 1;
+      try {
+        const loadingTask = pdfjsLib.getDocument(API_BASE_URL + pdfPath);
+        currentPdf = await loadingTask.promise;
+        totalPages = currentPdf.numPages;
+        renderPage(currentPageNum);
+        updateControls();
+      } catch (err) {
+        container.innerHTML += `<p style='color:red;'>Failed to load PDF.</p>`;
+      }
     }
 
-    // Display only unique issues as clickable links
-    libraryDiv.innerHTML = "<h3>Select an issue to view:</h3>";
-    const seen = new Set();
-    data.purchases.forEach((p) => {
-      if (seen.has(p.issue.title)) return;
-      seen.add(p.issue.title);
-      const link = document.createElement("a");
-      link.href = "#";
-      link.textContent = p.issue.title;
-      link.style.display = "block";
-      link.style.marginBottom = "10px";
-      link.onclick = function(e) {
-        e.preventDefault();
-        showFlipbook(p.issue.pdfPath, p.issue.title);
-      };
-      libraryDiv.appendChild(link);
-    });
-  }
+    async function renderPage(pageNum) {
+      if (!currentPdf) return;
+      const page = await currentPdf.getPage(pageNum);
+      const viewport = page.getViewport({ scale: 1.5 });
+      const canvas = document.getElementById('pdf-canvas');
+      const context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      await page.render({ canvasContext: context, viewport: viewport }).promise;
+      updateControls();
+    }
 
-  function showFlipbook(pdfPath, title) {
-  const container = document.getElementById("flipbook-container");
-  container.style.display = "block";
-  // Use locally hosted PDF.js viewer with relative PDF path
-  const viewerUrl = `pdfjs/web/viewer.html?file=${encodeURIComponent(pdfPath)}`;
-  container.innerHTML = `<h3>${title}</h3><iframe src="${viewerUrl}" width="100%" height="600" style="border:none;"></iframe>`;
-  }
+    function updateControls() {
+      document.getElementById('page-info').textContent = `Page ${currentPageNum} of ${totalPages}`;
+      document.getElementById('prev-page').disabled = currentPageNum <= 1;
+      document.getElementById('next-page').disabled = currentPageNum >= totalPages;
+    }
 
-  loadLibrary();
+    document.getElementById('prev-page').onclick = async function() {
+      if (currentPageNum > 1) {
+        currentPageNum--;
+        await renderPage(currentPageNum);
+      }
+    };
+    document.getElementById('next-page').onclick = async function() {
+      if (currentPageNum < totalPages) {
+        currentPageNum++;
+        await renderPage(currentPageNum);
+      }
+    };
+
+    loadLibrary();
   </script>
 </body>
   <footer>
