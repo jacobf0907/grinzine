@@ -30,3 +30,7 @@ primary_region = "iad"
     timeout = 2000
     grace_period = "1s"
     restart_limit = 6
+
+    [[mounts]]
+  source = "pdfs"
+  destination = "/data/pdfs"
