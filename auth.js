@@ -73,6 +73,63 @@ router.post('/login', async (req, res) => {
   res.json({ message: "Logged in" });
 });
 
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+// --- REQUEST PASSWORD RESET ---
+router.post('/request-reset', async (req, res) => {
+  const { email } = req.body;
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    // Don't reveal if user exists
+    return res.json({ message: 'If your email is registered, a reset link has been sent.' });
+  }
+  // Generate token
+  const token = crypto.randomBytes(32).toString('hex');
+  const expiry = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+  await prisma.user.update({
+    where: { email },
+    data: { resetToken: token, resetTokenExpiry: expiry }
+  });
+  // Send email
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS
+    }
+  });
+  const resetUrl = `${process.env.RESET_URL || 'https://grinzine.fly.dev'}/reset-password.html?token=${token}`;
+  await transporter.sendMail({
+    from: process.env.GMAIL_USER,
+    to: email,
+    subject: 'GRIN Password Reset',
+    html: `<p>You requested a password reset for GRIN.<br>
+      Click <a href="${resetUrl}">here</a> to reset your password.<br>
+      This link will expire in 1 hour.</p>`
+  });
+  res.json({ message: 'If your email is registered, a reset link has been sent.' });
+});
+
+// --- RESET PASSWORD ---
+router.post('/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  const user = await prisma.user.findFirst({
+    where: {
+      resetToken: token,
+      resetTokenExpiry: { gte: new Date() }
+    }
+  });
+  if (!user) {
+    return res.status(400).json({ error: 'Invalid or expired token.' });
+  }
+  const hashed = await bcrypt.hash(password, 10);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { password: hashed, resetToken: null, resetTokenExpiry: null }
+  });
+  res.json({ message: 'Password has been reset.' });
+});
+
 // --- LOGOUT ---
 router.post('/logout', (req, res) => {
   res.clearCookie("token", {

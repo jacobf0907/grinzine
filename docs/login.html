@@ -23,38 +23,80 @@
   </header>
 
   <body>
-  <h2>Login</h2>
-  <form id="login-form">
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <button type="submit">Login</button>
-  </form>
+  <div class="centered-login">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit" class="paywall-btn">Login</button>
+    </form>
 
-  <p>Don’t have an account? <a href="signup.html">Sign up</a></p>
+    <p style="font-family: 'Pathway Gothic One', sans-serif; font-size: 1.1em;">Don’t have an account? <a href="signup.html">Sign up</a></p>
+
+    <p style="margin-top:20px; text-align:center;">
+      <a href="#" id="forgot-link" style="font-family: 'Pathway Gothic One', sans-serif; font-size: 1.1em; color: #e63946; text-decoration: underline;">Forgot password?</a>
+    </p>
+
+    <form id="reset-form" style="display:none; max-width:350px; margin:20px auto; text-align:center;">
+      <input type="email" id="reset-email" placeholder="Enter your email" required style="width:100%;margin-bottom:10px;" />
+      <button type="submit" class="paywall-btn">Send Reset Link</button>
+      <p id="reset-message" style="margin-top:10px;font-size:1em;"></p>
+    </form>
+  </div>
 
   <script>
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const API_BASE_URL =
         window.location.hostname === "localhost"
             ? "http://localhost:4242"
             : "https://grinzine.fly.dev";
-
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include" // 🔑 ensures cookie is stored
+        credentials: "include"
       });
-
       const data = await res.json();
       if (res.ok) {
         window.location.href = "my_library.html";
       } else {
         alert(data.error || "Error logging in");
+      }
+    });
+
+    // Show reset form when 'Forgot password?' is clicked
+    document.getElementById("forgot-link").onclick = function(e) {
+      e.preventDefault();
+      document.getElementById("reset-form").style.display = "block";
+      document.getElementById("forgot-link").style.display = "none";
+    };
+
+    // Handle reset form submission
+    document.getElementById("reset-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const email = document.getElementById("reset-email").value;
+      const API_BASE_URL =
+        window.location.hostname === "localhost"
+            ? "http://localhost:4242"
+            : "https://grinzine.fly.dev";
+      document.getElementById("reset-message").textContent = "Sending reset link...";
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/request-reset`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById("reset-message").textContent = "If your email is registered, a reset link has been sent.";
+        } else {
+          document.getElementById("reset-message").textContent = data.error || "Error sending reset link.";
+        }
+      } catch {
+        document.getElementById("reset-message").textContent = "Error sending reset link.";
       }
     });
   </script>

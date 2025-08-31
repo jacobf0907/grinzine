@@ -11,17 +11,16 @@
 </head>
 <body>
   <header>
-    <h1>
-      <a href="index.html">
-        <img src="GrinLogo.png" alt="GRIN" style="width: 500px; height:auto;">
-      <nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="issues.html">Issues</a>
-    <a href="my_library.html">My Library</a>
-    <span id="nav-auth" style="float:right;"></span>
-      </nav>
-  <span id="nav-auth" style="float:right; position:relative;"></span>
+    <a href="index.html">
+      <img src="GrinLogo.png" alt="GRIN" style="width: 500px; height:auto;">
+    </a>
+    <h1>GRIN</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="issues.html">Issues</a>
+      <a href="my_library.html">My Library</a>
+      <span id="nav-auth" style="float:right;"></span>
     </nav>
   </header>
 
@@ -78,7 +77,7 @@
               throw new Error();
             }
           } catch {
-            document.getElementById("nav-auth").innerHTML = `<button onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+            document.getElementById("nav-auth").innerHTML = `<button class='paywall-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
           }
         }
         updateNavAuth();

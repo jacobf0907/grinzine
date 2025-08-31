@@ -101,7 +101,7 @@ async function updateNavAuth() {
       throw new Error();
     }
   } catch {
-    document.getElementById("nav-auth").innerHTML = `<button onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  document.getElementById("nav-auth").innerHTML = `<button class='paywall-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
   }
 }
 updateNavAuth();
@@ -273,7 +273,7 @@ resetLogoutTimer();
           throw new Error();
         }
       } catch {
-        document.getElementById("nav-auth").innerHTML = `<button onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  document.getElementById("nav-auth").innerHTML = `<button class='paywall-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
       }
     }
     updateNavAuth();
