@@ -20,8 +20,7 @@
   <a href="index.html">Home</a>
   <a href="about.html">About</a>
   <a href="issues.html">Issues</a>
-  <span id="nav-auth" style="float:right;"></span>
-  <span id="nav-auth" style="float:right; position:relative;"></span>
+    <span id="nav-auth" style="float:right; position:relative;"></span>
     </nav>
   </header>
 
@@ -85,11 +84,15 @@ async function updateNavAuth() {
           await fetch(`${API_BASE_URL}/auth/logout`, { method: "POST", credentials: "include" });
           window.location.href = "login.html";
         };
-        document.addEventListener("click", function(e) {
-          if (!e.target.closest("#nav-auth")) {
-            document.getElementById("logout-dropdown").style.display = "none";
-          }
-        });
+          document.addEventListener("click", function(e) {
+            const navAuth = document.getElementById("nav-auth");
+            const dropdown = document.getElementById("logout-dropdown");
+            if (!dropdown || !navAuth) return;
+            // Only close if clicking outside the dropdown and outside the user-email span
+            if (!e.target.closest("#logout-dropdown") && !e.target.closest("#user-email")) {
+              dropdown.style.display = "none";
+            }
+          });
       } else {
         document.getElementById("nav-auth").textContent = `Logged in`;
       }
