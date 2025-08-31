@@ -48,7 +48,9 @@ See https://github.com/adobe-type-tools/cmap-resources
           <div id="toolbarContainer">
             <div id="toolbarViewer" class="toolbarHorizontalGroup">
               <div id="toolbarViewerLeft" class="toolbarHorizontalGroup">
-                <!-- Sidebar toggle button removed -->
+                <button id="sidebarToggleButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-toggle-sidebar-button" aria-expanded="false" aria-haspopup="true" aria-controls="sidebarContainer" style="display:none;">
+                  <span data-l10n-id="pdfjs-toggle-sidebar-button-label"></span>
+                </button>
                 <div class="toolbarButtonSpacer"></div>
                 <div class="toolbarButtonWithContainer">
                   <button id="viewFindButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-findbar-button" aria-expanded="false" aria-controls="findbar">
@@ -254,7 +256,12 @@ See https://github.com/adobe-type-tools/cmap-resources
                 <div id="editorModeSeparator" class="verticalToolbarSeparator"></div>
 
                 <div class="toolbarHorizontalGroup hiddenMediumView">
-                  <!-- Print and Download buttons removed -->
+                  <button id="printButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-print-button" style="display:none;">
+                    <span data-l10n-id="pdfjs-print-button-label"></span>
+                  </button>
+                  <button id="downloadButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-save-button" style="display:none;">
+                    <span data-l10n-id="pdfjs-save-button-label"></span>
+                  </button>
                 </div>
 
                 <div class="verticalToolbarSeparator hiddenMediumView"></div>
@@ -270,7 +277,12 @@ See https://github.com/adobe-type-tools/cmap-resources
                       </button>
 
                       <div class="visibleMediumView">
-                        <!-- Secondary print and download buttons removed -->
+                        <button id="secondaryPrint" class="toolbarButton labeled" type="button" tabindex="0" data-l10n-id="pdfjs-print-button" style="display:none;">
+                          <span data-l10n-id="pdfjs-print-button-label"></span>
+                        </button>
+                        <button id="secondaryDownload" class="toolbarButton labeled" type="button" tabindex="0" data-l10n-id="pdfjs-save-button" style="display:none;">
+                          <span data-l10n-id="pdfjs-save-button-label"></span>
+                        </button>
 
                       </div>
 
