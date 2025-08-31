@@ -1,3 +1,4 @@
+
 console.log("Starting server...");
 require('dotenv').config();
 const express = require('express');
@@ -11,6 +12,12 @@ const PORT = process.env.PORT || 4242;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 
 app.use(express.static(path.join(__dirname, 'docs')));
+// Add CORS headers for /pdfs route
+app.use('/pdfs', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*'); // Or restrict to 'https://mozilla.github.io'
+  res.header('Access-Control-Allow-Methods', 'GET');
+  next();
+});
 app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
 
 const ALLOWED_ORIGINS = [
