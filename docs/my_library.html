@@ -87,9 +87,8 @@
   function showFlipbook(pdfPath, title) {
   const container = document.getElementById("flipbook-container");
   container.style.display = "block";
-  // Use locally hosted PDF.js viewer
-  const backendBase = 'https://grinzine.fly.dev';
-  const viewerUrl = `pdfjs/web/viewer.html?file=${encodeURIComponent(backendBase + pdfPath)}`;
+  // Use locally hosted PDF.js viewer with relative PDF path
+  const viewerUrl = `pdfjs/web/viewer.html?file=${encodeURIComponent(pdfPath)}`;
   container.innerHTML = `<h3>${title}</h3><iframe src="${viewerUrl}" width="100%" height="600" style="border:none;"></iframe>`;
   }
 
