@@ -42,37 +42,52 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       <div id="sidebarContainer">
         <div id="toolbarSidebar" class="toolbarHorizontalGroup">
-  <div id="sidebarContainer">
-        <div id="toolbarSidebar" class="toolbarHorizontalGroup">
           <div id="toolbarSidebarLeft">
             <div id="sidebarViewButtons" class="toolbarHorizontalGroup toggled" role="radiogroup">
-              <button id="viewThumbnail" class="toolbarButton toggled" type="button" tabindex="0" data-l10n-id="pdfjs-thumbs-button" role="radio" aria-checked="true" aria-controls="thumbnailView" style="display:none;"><span data-l10n-id="pdfjs-thumbs-button-label"></span></button>
-              <button id="viewOutline" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-document-outline-button" role="radio" aria-checked="false" aria-controls="outlineView" style="display:none;"><span data-l10n-id="pdfjs-document-outline-button-label"></span></button>
-              <button id="viewAttachments" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-attachments-button" role="radio" aria-checked="false" aria-controls="attachmentsView" style="display:none;"><span data-l10n-id="pdfjs-attachments-button-label"></span></button>
-              <button id="viewLayers" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-layers-button" role="radio" aria-checked="false" aria-controls="layersView" style="display:none;"><span data-l10n-id="pdfjs-layers-button-label"></span></button>
+              <button id="viewThumbnail" class="toolbarButton toggled" type="button" tabindex="0" data-l10n-id="pdfjs-thumbs-button" role="radio" aria-checked="true" aria-controls="thumbnailView">
+                 <span data-l10n-id="pdfjs-thumbs-button-label"></span>
+              </button>
+              <button id="viewOutline" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-document-outline-button" role="radio" aria-checked="false" aria-controls="outlineView">
+                 <span data-l10n-id="pdfjs-document-outline-button-label"></span>
+              </button>
+              <button id="viewAttachments" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-attachments-button" role="radio" aria-checked="false" aria-controls="attachmentsView">
+                 <span data-l10n-id="pdfjs-attachments-button-label"></span>
+              </button>
+              <button id="viewLayers" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-layers-button" role="radio" aria-checked="false" aria-controls="layersView">
+                 <span data-l10n-id="pdfjs-layers-button-label"></span>
+              </button>
             </div>
           </div>
+
           <div id="toolbarSidebarRight">
             <div id="outlineOptionsContainer" class="toolbarHorizontalGroup">
               <div class="verticalToolbarSeparator"></div>
-              <button id="currentOutlineItem" class="toolbarButton" type="button" disabled="disabled" tabindex="0" data-l10n-id="pdfjs-current-outline-item-button" style="display:none;"><span data-l10n-id="pdfjs-current-outline-item-button-label"></span></button>
+
+              <button id="currentOutlineItem" class="toolbarButton" type="button" disabled="disabled" tabindex="0" data-l10n-id="pdfjs-current-outline-item-button">
+                <span data-l10n-id="pdfjs-current-outline-item-button-label"></span>
+              </button>
             </div>
           </div>
         </div>
         <div id="sidebarContent">
-          <div id="thumbnailView" style="display:none;"></div>
-          <div id="outlineView" class="hidden" style="display:none;"></div>
-          <div id="attachmentsView" class="hidden" style="display:none;"></div>
-          <div id="layersView" class="hidden" style="display:none;"></div>
+          <div id="thumbnailView">
+          </div>
+          <div id="outlineView" class="hidden">
+          </div>
+          <div id="attachmentsView" class="hidden">
+          </div>
+          <div id="layersView" class="hidden">
+          </div>
         </div>
-        <div id="sidebarResizer" style="display:none;"></div>
+        <div id="sidebarResizer"></div>
       </div>  <!-- sidebarContainer -->
+
       <div id="mainContainer">
         <div class="toolbar">
           <div id="toolbarContainer">
             <div id="toolbarViewer" class="toolbarHorizontalGroup">
               <div id="toolbarViewerLeft" class="toolbarHorizontalGroup">
-                <button id="sidebarToggleButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-toggle-sidebar-button" aria-expanded="false" aria-haspopup="true" aria-controls="sidebarContainer" style="display:none;">
+                <button id="sidebarToggleButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-toggle-sidebar-button" aria-expanded="false" aria-haspopup="true" aria-controls="sidebarContainer">
                   <span data-l10n-id="pdfjs-toggle-sidebar-button-label"></span>
                 </button>
                 <div class="toolbarButtonSpacer"></div>
@@ -280,10 +295,11 @@ See https://github.com/adobe-type-tools/cmap-resources
                 <div id="editorModeSeparator" class="verticalToolbarSeparator"></div>
 
                 <div class="toolbarHorizontalGroup hiddenMediumView">
-                  <button id="printButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-print-button" style="display:none;">
+                  <button id="printButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-print-button">
                     <span data-l10n-id="pdfjs-print-button-label"></span>
                   </button>
-                  <button id="downloadButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-save-button" style="display:none;">
+
+                  <button id="downloadButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-save-button">
                     <span data-l10n-id="pdfjs-save-button-label"></span>
                   </button>
                 </div>
@@ -301,10 +317,11 @@ See https://github.com/adobe-type-tools/cmap-resources
                       </button>
 
                       <div class="visibleMediumView">
-                        <button id="secondaryPrint" class="toolbarButton labeled" type="button" tabindex="0" data-l10n-id="pdfjs-print-button" style="display:none;">
+                        <button id="secondaryPrint" class="toolbarButton labeled" type="button" tabindex="0" data-l10n-id="pdfjs-print-button">
                           <span data-l10n-id="pdfjs-print-button-label"></span>
                         </button>
-                        <button id="secondaryDownload" class="toolbarButton labeled" type="button" tabindex="0" data-l10n-id="pdfjs-save-button" style="display:none;">
+
+                        <button id="secondaryDownload" class="toolbarButton labeled" type="button" tabindex="0" data-l10n-id="pdfjs-save-button">
                           <span data-l10n-id="pdfjs-save-button-label"></span>
                         </button>
 
