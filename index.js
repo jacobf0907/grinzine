@@ -162,13 +162,14 @@ const user = await prisma.user.findUnique({ where: { email: "test@example.com" }
 
 
 // Map Stripe Price IDs to issue info
-const ISSUE_MAP = {
-  'price_1RugTbJulbntxSe8oz8G1wql': {
-    name: 'GRIN Zine - Issue 1',
-    pdfPath: '/pdfs/grin-magazine-volume-one-web.pdf'
-  },
-// add new issues here
-};
+const { ISSUES } = require('./issues');
+const ISSUE_MAP = {};
+for (const issue of ISSUES) {
+  ISSUE_MAP[issue.priceId] = {
+    name: issue.title,
+    pdfPath: issue.pdfPath
+  };
+}
 
 
 // Create checkout session route
