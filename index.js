@@ -55,6 +55,7 @@ app.use(express.json());
 
 // Webhook handler (must use raw body)
 app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+  console.log('--- Stripe Webhook Received ---');
   const sig = req.headers['stripe-signature'];
   let event;
 
