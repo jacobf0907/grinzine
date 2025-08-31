@@ -18,7 +18,6 @@
     margin: 30px auto;
   }
   </style>
-  <!-- PDF.js viewer (no extra script needed, uses iframe) -->
 </head>
 
 <body>
@@ -88,8 +87,9 @@
   function showFlipbook(pdfPath, title) {
   const container = document.getElementById("flipbook-container");
   container.style.display = "block";
-  // Use Mozilla PDF.js demo viewer
-  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfPath)}`;
+  // Use Mozilla PDF.js demo viewer with your backend's PDF URL
+  const backendBase = 'https://grinzine.fly.dev';
+  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(backendBase + pdfPath)}`;
   container.innerHTML = `<h3>${title}</h3><iframe src="${viewerUrl}" width="100%" height="600" style="border:none;"></iframe>`;
   }
 
