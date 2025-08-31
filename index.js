@@ -23,7 +23,7 @@ app.use('/pdfs', (req, res, next) => {
   }
   next();
 });
-app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
+app.use('/pdfs', express.static('/data/pdfs'));
 
 const ALLOWED_ORIGINS = [
   'https://jacobf0907.github.io',
