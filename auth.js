@@ -98,7 +98,7 @@ router.post('/request-reset', async (req, res) => {
       pass: process.env.GMAIL_PASS
     }
   });
-  const resetUrl = `${process.env.RESET_URL || 'https://grinzine.fly.dev'}/reset-password.html?token=${token}`;
+  const resetUrl = `${process.env.ALLOWED_ORIGIN || 'https://grinzine.fly.dev'}/reset-password.html?token=${token}`;
   await transporter.sendMail({
     from: process.env.GMAIL_USER,
     to: email,
