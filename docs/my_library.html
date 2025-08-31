@@ -96,7 +96,7 @@
       flipbookInstance.destroy();
     }
     try {
-      flipbookInstance = new window.PDFFlipBook({
+      flipbookInstance = window.PDFFlipBook.init({
         pdf: pdfPath,
         backgroundColor: "#f4f1ec",
         height: 600,
