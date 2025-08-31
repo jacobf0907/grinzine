@@ -8,17 +8,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
-    <style>
-    .issue {
-        margin-bottom: 40px;
-    }
-    iframe {
-        width: 100%;
-        height: 600px;
-        border: none;
-        margin-top: 10px;
-    }
-    </style>
+  <style>
+  .issue {
+    margin-bottom: 40px;
+  }
+  .flipbook-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 30px auto;
+  }
+  </style>
+  <!-- PDF Flipbook library -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pdf-flipbook@latest/dist/pdf-flipbook.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pdf-flipbook@latest/dist/pdf-flipbook.min.js"></script>
 </head>
 
 <body>
@@ -38,12 +40,15 @@
   <body>
   <h2>My Library</h2>
   <div id="library"></div>
+  <div class="flipbook-container" id="flipbook-container" style="display:none;"></div>
 
   <script>
   const API_BASE_URL =
     window.location.hostname === "localhost"
       ? "http://localhost:4242"
       : "https://grinzine.fly.dev";
+
+  let flipbookInstance = null;
 
   async function loadLibrary() {
     const res = await fetch(`${API_BASE_URL}/auth/my-library`, {
@@ -63,19 +68,49 @@
       return;
     }
 
-    // Display purchased issues
-    data.purchases.forEach(p => {
-      const issueDiv = document.createElement("div");
-      issueDiv.innerHTML = `
-        <h3>${p.issue.title}</h3>
-        <a href="${p.issue.pdfPath}" target="_blank">Read Issue</a>
-      `;
-      libraryDiv.appendChild(issueDiv);
+    // Display purchased issues as clickable links
+    libraryDiv.innerHTML = "<h3>Select an issue to view:</h3>";
+    data.purchases.forEach((p, idx) => {
+      const link = document.createElement("a");
+      link.href = "#";
+      link.textContent = p.issue.title;
+      link.style.display = "block";
+      link.style.marginBottom = "10px";
+      link.onclick = function(e) {
+        e.preventDefault();
+        showFlipbook(p.issue.pdfPath, p.issue.title);
+      };
+      libraryDiv.appendChild(link);
+    });
+  }
+
+  function showFlipbook(pdfPath, title) {
+    const container = document.getElementById("flipbook-container");
+    container.style.display = "block";
+    container.innerHTML = `<h3>${title}</h3><div id='flipbook'></div>`;
+    // Destroy previous instance if exists
+    if (flipbookInstance && typeof flipbookInstance.destroy === "function") {
+      flipbookInstance.destroy();
+    }
+    flipbookInstance = new FlipBook({
+      pdf: pdfPath,
+      backgroundColor: "#f4f1ec",
+      height: 600,
+      webgl: true,
+      controlsProps: {
+        download: true,
+        print: true,
+        share: false
+      },
+      style: {
+        margin: "0 auto"
+      },
+      container: document.getElementById("flipbook")
     });
   }
 
   loadLibrary();
-</script>
+  </script>
 </body>
   <footer>
   <script>
