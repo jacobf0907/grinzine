@@ -68,9 +68,12 @@
       return;
     }
 
-    // Display purchased issues as clickable links
+    // Display only unique issues as clickable links
     libraryDiv.innerHTML = "<h3>Select an issue to view:</h3>";
-    data.purchases.forEach((p, idx) => {
+    const seen = new Set();
+    data.purchases.forEach((p) => {
+      if (seen.has(p.issue.title)) return;
+      seen.add(p.issue.title);
       const link = document.createElement("a");
       link.href = "#";
       link.textContent = p.issue.title;
@@ -92,21 +95,26 @@
     if (flipbookInstance && typeof flipbookInstance.destroy === "function") {
       flipbookInstance.destroy();
     }
-    flipbookInstance = new FlipBook({
-      pdf: pdfPath,
-      backgroundColor: "#f4f1ec",
-      height: 600,
-      webgl: true,
-      controlsProps: {
-        download: true,
-        print: true,
-        share: false
-      },
-      style: {
-        margin: "0 auto"
-      },
-      container: document.getElementById("flipbook")
-    });
+    try {
+      flipbookInstance = new window.FlipBook({
+        pdf: pdfPath,
+        backgroundColor: "#f4f1ec",
+        height: 600,
+        webgl: true,
+        controlsProps: {
+          download: true,
+          print: true,
+          share: false
+        },
+        style: {
+          margin: "0 auto"
+        },
+        container: document.getElementById("flipbook")
+      });
+    } catch (err) {
+      container.innerHTML += `<p style='color:red;'>Failed to load flipbook. Please check the PDF path and library load.</p>`;
+      console.error('FlipBook error:', err);
+    }
   }
 
   loadLibrary();
