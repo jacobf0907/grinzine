@@ -1,4 +1,25 @@
-#printButton, #secondaryPrint, #downloadButton, #secondaryDownload, #sidebarContainer, #sidebarToggleButton {
+/* Hide sidebar, print, and download UI but keep elements in DOM for JS compatibility */
+#sidebarContainer,
+#toolbarSidebar,
+#sidebarViewButtons,
+#viewThumbnail,
+#viewOutline,
+#viewAttachments,
+#viewLayers,
+#toolbarSidebarRight,
+#outlineOptionsContainer,
+#currentOutlineItem,
+#sidebarContent,
+#thumbnailView,
+#outlineView,
+#attachmentsView,
+#layersView,
+#sidebarResizer,
+#printButton,
+#secondaryPrint,
+#downloadButton,
+#secondaryDownload,
+#sidebarToggleButton {
   display: none !important;
 }
 
