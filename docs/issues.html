@@ -46,6 +46,35 @@
       });
       window.addEventListener('resize', checkMobile);
       document.addEventListener('DOMContentLoaded', checkMobile);
+
+      // Show 'View This Issue' if already purchased
+      document.addEventListener('DOMContentLoaded', async () => {
+        const API_BASE_URL = window.location.hostname === "localhost"
+          ? "http://localhost:4242"
+          : "https://api.grinzine.com";
+        try {
+          const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+          if (res.ok) {
+            const data = await res.json();
+            // Find all checkout buttons
+            document.querySelectorAll('.checkout-btn').forEach(btn => {
+              const priceId = btn.getAttribute('data-price-id');
+              const unlocked = data.purchases.some(p => p.issue && p.issue.priceId === priceId);
+              if (unlocked) {
+                btn.textContent = 'View This Issue';
+                btn.classList.remove('paywall-btn');
+                btn.classList.add('paywall-btn');
+                btn.onclick = () => {
+                  window.location.href = 'my_library.html';
+                };
+                btn.disabled = false;
+              }
+            });
+          }
+        } catch (err) {
+          // Not logged in or error, do nothing
+        }
+      });
     </script>
 
     <section class="issues">
