@@ -37,7 +37,7 @@ nav {
     justify-content: space-between;
   }
   nav {
-    display: none;
+    display: none !important;
     flex-direction: column;
     gap: 12px;
     align-items: center;
@@ -50,7 +50,7 @@ nav {
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   }
   nav.open {
-    display: flex;
+    display: flex !important;
   }
   header {
     position: relative;
