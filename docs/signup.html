@@ -65,7 +65,7 @@
       const API_BASE_URL =
         window.location.hostname === "localhost"
             ? "http://localhost:4242"
-            : "https://grinzine.fly.dev";
+            : "https://api.grinzine.com";
 
       // Use /auth/signup to match backend route
       const res = await fetch(`${API_BASE_URL}/auth/signup`, {

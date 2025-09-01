@@ -63,7 +63,7 @@
         async function updateNavAuth() {
           const API_BASE_URL = window.location.hostname === "localhost"
             ? "http://localhost:4242"
-            : "https://grinzine.fly.dev";
+            : "https://api.grinzine.com";
           try {
             const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
             if (res.ok) {
@@ -108,7 +108,7 @@
         function resetLogoutTimer() {
           clearTimeout(logoutTimer);
           logoutTimer = setTimeout(() => {
-            fetch(`${window.location.hostname === "localhost" ? "http://localhost:4242" : "https://grinzine.fly.dev"}/auth/logout`, { method: "POST", credentials: "include" });
+            fetch(`${window.location.hostname === "localhost" ? "http://localhost:4242" : "https://api.grinzine.com"}/auth/logout`, { method: "POST", credentials: "include" });
             window.location.href = "login.html";
           }, 30 * 60 * 1000); // 30 minutes
         }
