@@ -10,6 +10,8 @@ const path = require('path');
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const app = express();
 
+app.set('trust proxy', 1);
+
 // CORS setup (must be after app is initialized, before any other middleware/routes)
 const ALLOWED_ORIGINS = [
   'https://www.grinzine.com',
