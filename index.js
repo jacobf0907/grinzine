@@ -1,5 +1,3 @@
-
-
 console.log("Starting server...");
 require('dotenv').config();
 const express = require('express');
@@ -8,6 +6,11 @@ const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
 
+
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+const app = express();
+
+// CORS setup (must be after app is initialized, before any other middleware/routes)
 const ALLOWED_ORIGINS = [
   'https://www.grinzine.com',
   'https://grinzine.com',
@@ -25,13 +28,8 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
-// Apply CORS to all requests before any other middleware/routes
 app.use(cors(corsOptions));
-// Handle preflight OPTIONS requests for all routes
 app.options('*', cors(corsOptions));
-
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const app = express();
 // General rate limit: 100 requests per 15 minutes per IP
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
