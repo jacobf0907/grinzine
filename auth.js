@@ -68,7 +68,8 @@ router.post('/login', async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: true, // must be true for cross-site cookies on HTTPS
-    sameSite: 'none' // allow cross-origin
+    sameSite: 'none', // allow cross-origin
+    domain: '.grinzine.com' // ensure cookie is sent to frontend domain
   });
   res.json({ message: "Logged in" });
 });
@@ -135,7 +136,8 @@ router.post('/logout', (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: true,
-    sameSite: 'none'
+    sameSite: 'none',
+    domain: '.grinzine.com'
   });
   res.json({ message: "Logged out" });
 });
