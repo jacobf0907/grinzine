@@ -15,6 +15,7 @@
         <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
       </a>
       <div class="nav-center">
+        <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
         <nav>
           <a href="index.html">Home</a>
           <a href="about.html">About</a>
@@ -23,6 +24,26 @@
           <span id="nav-auth"></span>
         </nav>
       </div>
+  <script>
+    // Mobile nav toggle
+    const navToggle = document.querySelector('.nav-toggle');
+    const nav = document.querySelector('nav');
+    function checkMobile() {
+      if (window.innerWidth <= 700) {
+        navToggle.style.display = 'block';
+        nav.classList.remove('open');
+      } else {
+        navToggle.style.display = 'none';
+        nav.classList.remove('open');
+        nav.style.display = '';
+      }
+    }
+    navToggle.addEventListener('click', () => {
+      nav.classList.toggle('open');
+    });
+    window.addEventListener('resize', checkMobile);
+    document.addEventListener('DOMContentLoaded', checkMobile);
+  </script>
   </header>
 
   <body>

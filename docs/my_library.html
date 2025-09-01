@@ -26,15 +26,13 @@
         <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
       </a>
     <h1>Purchased Issues</h1>
-    <div class="nav-center">
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="issues.html">Issues</a>
-        <a href="my_library.html">My Library</a>
-        <span id="nav-auth" style="float:right;"></span>
-      </nav>
-    </div>
+    <nav>
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="issues.html">Issues</a>
+  <a href="my_library.html">My Library</a>
+  <span id="nav-auth" style="float:right;"></span>
+    </nav>
   </header>
 
   <body>
@@ -163,14 +161,14 @@
         if (res.ok) {
           const data = await res.json();
           if (data.email) {
-            document.getElementById("nav-auth").innerHTML = `
+            document.getElementById("nav-auth").innerHTML = 
               <div style="display:inline-block;position:relative;">
                 <span id="user-email" style="cursor:pointer;">Logged in as ${data.email} ▼</span>
                 <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;">
                   <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;">Logout</button>
                 </div>
               </div>
-            `;
+            ;
             document.getElementById("user-email").onclick = function() {
               const dd = document.getElementById("logout-dropdown");
               dd.style.display = dd.style.display === "block" ? "none" : "block";

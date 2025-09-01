@@ -17,17 +17,38 @@
     </a>
     <h1>Payment Successful</h1>
       <div class="nav-center">
-        <nav>
-          <a href="index.html">Home</a>
-          <a href="about.html">About</a>
-          <a href="issues.html">Issues</a>
-          <a href="my_library.html">My Library</a>
-          <span id="nav-auth" style="float:right;"></span>
-        </nav>
+          <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
+          <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="issues.html">Issues</a>
+            <a href="my_library.html">My Library</a>
+            <span id="nav-auth" style="float:right;"></span>
+          </nav>
       </div>
   </header>
 
   <main>
+      <script>
+        // Mobile nav toggle
+        const navToggle = document.querySelector('.nav-toggle');
+        const nav = document.querySelector('nav');
+        function checkMobile() {
+          if (window.innerWidth <= 700) {
+            navToggle.style.display = 'block';
+            nav.classList.remove('open');
+          } else {
+            navToggle.style.display = 'none';
+            nav.classList.remove('open');
+            nav.style.display = '';
+          }
+        }
+        navToggle.addEventListener('click', () => {
+          nav.classList.toggle('open');
+        });
+        window.addEventListener('resize', checkMobile);
+        document.addEventListener('DOMContentLoaded', checkMobile);
+      </script>
     <section>
       <h2>Thank you for your purchase. This issue is now available in your library.</h2>
       <button onclick="window.location.href='my_library.html'">Go to My Library</button>

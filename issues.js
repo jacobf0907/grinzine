@@ -13,7 +13,7 @@
 
 const ISSUES = [
   {
-    priceId: 'price_1RugTbJulbntxSe8oz8G1wql',
+    priceId: 'price_1S2bHIF8I4vGxQh7byJ1ky6x',
     title: 'Grin Magazine Issue #1',
     pdfPath: '/pdfs/grin-magazine-volume-one-web.pdf'
   },

@@ -18,6 +18,43 @@ nav {
   header {
     padding: 0.5rem;
   }
+  .nav-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 2em;
+    color: white;
+    cursor: pointer;
+    margin: 0 0 0 10px;
+    z-index: 1001;
+    position: absolute;
+    right: 20px;
+    top: 18px;
+  }
+  .nav-center {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  nav {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    background: #000;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100vw;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  nav.open {
+    display: flex;
+  }
+  header {
+    position: relative;
+  }
   header img {
     width: 140px !important;
   }

@@ -15,6 +15,7 @@
       <a href="index.html">
         <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
       <div class="nav-center">
+        <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
         <nav>
           <a href="index.html">Home</a>
           <a href="about.html">About</a>
@@ -28,6 +29,26 @@
   </header>
 
   <main>
+    <script>
+      const navToggle = document.querySelector('.nav-toggle');
+      const nav = document.querySelector('nav');
+      function checkMobile() {
+        if (window.innerWidth <= 700) {
+          navToggle.style.display = 'block';
+          nav.classList.remove('open');
+        } else {
+          navToggle.style.display = 'none';
+          nav.classList.remove('open');
+          nav.style.display = '';
+        }
+      }
+      navToggle.addEventListener('click', () => {
+        nav.classList.toggle('open');
+      });
+      window.addEventListener('resize', checkMobile);
+      document.addEventListener('DOMContentLoaded', checkMobile);
+    </script>
+
     <section class="issues">
 
       <!-- Issue 1 -->
@@ -36,7 +57,7 @@
         <button 
           type="button" 
           class="paywall-btn checkout-btn" 
-          data-price-id="price_1RugTbJulbntxSe8oz8G1wql" 
+          data-price-id="price_1S2bHIF8I4vGxQh7byJ1ky6x" 
           style="display:block; margin:0 auto;">
           Unlock This Issue
         </button>
