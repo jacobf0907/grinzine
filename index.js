@@ -1,4 +1,5 @@
 
+
 console.log("Starting server...");
 require('dotenv').config();
 const express = require('express');
@@ -6,6 +7,28 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
+
+const ALLOWED_ORIGINS = [
+  'https://www.grinzine.com',
+  'https://grinzine.com',
+  `http://localhost:${process.env.PORT || 4242}`
+];
+const corsOptions = {
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+// Apply CORS to all requests before any other middleware/routes
+app.use(cors(corsOptions));
+// Handle preflight OPTIONS requests for all routes
+app.options('*', cors(corsOptions));
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const app = express();
@@ -54,31 +77,6 @@ app.use('/pdfs', (req, res, next) => {
   next();
 });
 app.use('/pdfs', express.static('/data/pdfs'));
-
-const ALLOWED_ORIGINS = [
-  'https://www.grinzine.com',
-  `http://localhost:${PORT}`
-];
-
-const corsOptions = {
-  origin: function(origin, callback) {
-    console.log('Request Origin:', origin);
-    console.log('Allowed Origins:', ALLOWED_ORIGINS);
-    if (!origin) return callback(null, true);
-    if (ALLOWED_ORIGINS.includes(origin)) {
-      return callback(null, true);
-    }
-    console.warn('CORS blocked for origin:', origin);
-    return callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-app.use((req, res, next) => {
-  if (req.originalUrl === '/webhook') return next();
-  cors(corsOptions)(req, res, next);
-});
 
 
 // Error handler for CORS
