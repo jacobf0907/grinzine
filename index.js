@@ -2,12 +2,42 @@
 console.log("Starting server...");
 require('dotenv').config();
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const app = express();
+// General rate limit: 100 requests per 15 minutes per IP
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(generalLimiter);
+
+// Stricter rate limit for login and password reset
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Only 10 attempts per 15 minutes
+  message: 'Too many attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply to login and password reset routes
+app.use('/auth/login', authLimiter);
+app.use('/auth/request-reset', authLimiter);
+app.use('/auth/reset-password', authLimiter);
+// Enforce HTTPS for all traffic
+app.use((req, res, next) => {
+  if (req.headers['x-forwarded-proto'] === 'http') {
+    return res.redirect(301, 'https://' + req.headers.host + req.url);
+  }
+  next();
+});
 const PORT = process.env.PORT || 4242;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 
@@ -50,12 +80,23 @@ app.use((req, res, next) => {
   cors(corsOptions)(req, res, next);
 });
 
+
+// Error handler for CORS
 app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
     res.status(403).json({ error: 'CORS error: Origin not allowed' });
   } else {
     next(err);
   }
+});
+
+// Basic error logging middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  if (err.stack) {
+    console.error(err.stack);
+  }
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 app.use(require('cookie-parser')());
