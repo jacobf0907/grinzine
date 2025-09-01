@@ -22,20 +22,20 @@
 
 <body>
   <header>
-      <a href="index.html">
-        <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
-      </a>
-    <h1>Purchased Issues</h1>
-    <nav>
-  <a href="index.html">Home</a>
-  <a href="about.html">About</a>
-  <a href="issues.html">Issues</a>
-  <a href="my_library.html">My Library</a>
-  <span id="nav-auth" style="float:right;"></span>
-    </nav>
+    <a href="index.html">
+      <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
+    <div class="nav-center">
+      <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="issues.html">Issues</a>
+        <a href="my_library.html">My Library</a>
+        <span id="nav-auth" style="float:right;"></span>
+      </nav>
+    </div>
   </header>
 
-  <body>
   <h2>My Library</h2>
   <div id="library"></div>
   <div class="flipbook-container" id="flipbook-container" style="display:none;">
@@ -47,6 +47,25 @@
       <button id="next-page" style="padding:8px 16px;">Next</button>
     </div>
   </div>
+  <script>
+    // Mobile nav toggle
+    const navToggle = document.querySelector('.nav-toggle');
+    const nav = document.querySelector('nav');
+    function checkMobile() {
+      if (window.innerWidth <= 700) {
+        navToggle.style.display = 'block';
+        nav.classList.remove('open');
+      } else {
+        navToggle.style.display = 'none';
+        nav.classList.remove('open');
+      }
+    }
+    navToggle.addEventListener('click', () => {
+      nav.classList.toggle('open');
+    });
+    window.addEventListener('resize', checkMobile);
+    document.addEventListener('DOMContentLoaded', checkMobile);
+  </script>
 
   <script type="module">
     const API_BASE_URL =
@@ -70,7 +89,7 @@
       const data = await res.json();
       const libraryDiv = document.getElementById("library");
 
-      if (data.purchases.length === 0) {
+      if (!data.purchases || data.purchases.length === 0) {
         libraryDiv.innerHTML = "<p>No purchases yet.</p>";
         return;
       }
@@ -93,7 +112,6 @@
         libraryDiv.appendChild(link);
       });
     }
-
 
     let currentPdf = null;
     let currentPageNum = 1;
@@ -146,7 +164,7 @@
       }
     };
 
-    loadLibrary();
+    document.addEventListener('DOMContentLoaded', loadLibrary);
   </script>
 </body>
   <footer>
@@ -161,14 +179,14 @@
         if (res.ok) {
           const data = await res.json();
           if (data.email) {
-            document.getElementById("nav-auth").innerHTML = 
+            document.getElementById("nav-auth").innerHTML = `
               <div style="display:inline-block;position:relative;">
                 <span id="user-email" style="cursor:pointer;">Logged in as ${data.email} ▼</span>
                 <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;">
                   <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;">Logout</button>
                 </div>
               </div>
-            ;
+            `;
             document.getElementById("user-email").onclick = function() {
               const dd = document.getElementById("logout-dropdown");
               dd.style.display = dd.style.display === "block" ? "none" : "block";
@@ -178,8 +196,11 @@
               window.location.href = "login.html";
             };
             document.addEventListener("click", function(e) {
-              if (!e.target.closest("#nav-auth")) {
-                document.getElementById("logout-dropdown").style.display = "none";
+              const navAuth = document.getElementById("nav-auth");
+              const dropdown = document.getElementById("logout-dropdown");
+              if (!dropdown || !navAuth) return;
+              if (!e.target.closest("#logout-dropdown") && !e.target.closest("#user-email")) {
+                dropdown.style.display = "none";
               }
             });
           } else {
@@ -189,7 +210,7 @@
           throw new Error();
         }
       } catch {
-  document.getElementById("nav-auth").innerHTML = `<button class='paywall-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+        document.getElementById("nav-auth").innerHTML = `<button class='paywall-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
       }
     }
     updateNavAuth();
