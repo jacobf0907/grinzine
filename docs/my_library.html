@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GRIN - Issues</title>
@@ -42,9 +45,9 @@
     <h3 id="pdf-title"></h3>
     <canvas id="pdf-canvas" style="width:100%;max-width:900px;"></canvas>
     <div id="pdf-controls" style="margin:20px 0; display:flex; justify-content:center; gap:20px;">
-  <button id="prev-page" class="paywall-btn">Previous</button>
+  <button id="prev-page" class="deafult-btn">Previous</button>
   <span id="page-info"></span>
-  <button id="next-page" class="paywall-btn">Next</button>
+  <button id="next-page" class="deafult-btn">Next</button>
     </div>
   </div>
   <script>
@@ -103,8 +106,9 @@
         const link = document.createElement("a");
         link.href = "#";
         link.textContent = p.issue.title;
-        link.style.display = "block";
-        link.style.margin = "0 auto 10px auto";
+        link.className = "default-btn";
+        link.style.display = "inline-block";
+        link.style.margin = "10px auto";
         link.style.fontSize = "1.15em";
         link.style.width = "fit-content";
         link.onclick = function(e) {
@@ -212,7 +216,7 @@
           throw new Error();
         }
       } catch {
-        document.getElementById("nav-auth").innerHTML = `<button class='paywall-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  document.getElementById("nav-auth").innerHTML = `<button class='deafult-btn' style='font-family: "Londrina Solid", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
       }
     }
     updateNavAuth();

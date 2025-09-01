@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GRIN - Issues</title>
@@ -62,8 +65,8 @@
               const unlocked = data.purchases.some(p => p.issue && p.issue.priceId === priceId);
               if (unlocked) {
                 btn.textContent = 'View This Issue';
-                btn.classList.remove('paywall-btn');
-                btn.classList.add('paywall-btn');
+                btn.classList.remove('deafult-btn');
+                btn.classList.add('deafult-btn');
                 btn.onclick = () => {
                   window.location.href = 'my_library.html';
                 };
@@ -84,7 +87,7 @@
         <img src="grinzine_issue1_cover.PNG" alt="Issue 1 Cover">
         <button 
           type="button" 
-          class="paywall-btn checkout-btn" 
+          class="deafult-btn checkout-btn" 
           data-price-id="price_1S2bHIF8I4vGxQh7byJ1ky6x" 
           style="display:block; margin:0 auto;">
           Unlock This Issue
@@ -97,7 +100,7 @@
         <img src="grinzine_issue2_cover.PNG" alt="Issue 2 Cover">
         <button 
           type="button" 
-          class="paywall-btn checkout-btn" 
+          class="deafult-btn checkout-btn" 
           data-price-id="price_XXXXXXXXXXXX" 
           style="display:block; margin:0 auto;">
           Unlock This Issue
@@ -152,7 +155,7 @@ async function updateNavAuth() {
       throw new Error();
     }
   } catch {
-  document.getElementById("nav-auth").innerHTML = `<button class='paywall-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  document.getElementById("nav-auth").innerHTML = `<button class='deafult-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
   }
 }
 updateNavAuth();
@@ -324,7 +327,7 @@ resetLogoutTimer();
           throw new Error();
         }
       } catch {
-  document.getElementById("nav-auth").innerHTML = `<button class='paywall-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  document.getElementById("nav-auth").innerHTML = `<button class='deafult-btn' style='font-family: "Londrina Solid", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
       }
     }
     updateNavAuth();
