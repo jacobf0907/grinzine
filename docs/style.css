@@ -1,3 +1,9 @@
+/* Knewave font class */
+.knewave-regular {
+  font-family: "Knewave", system-ui;
+  font-weight: 2000;
+  font-style: normal;
+}
 /* Londrina Solid font weights */
 .londrina-solid-thin {
   font-family: "Londrina Solid", sans-serif;
