@@ -25,6 +25,10 @@
             <a href="issues.html">Issues</a>
             <a href="my_library.html">My Library</a>
             <span id="nav-auth" style="float:right;"></span>
+            <span id="user-email" style="cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logged in as ${data.email} ▼</span>
+            <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;font-family:'Londrina Solid',sans-serif;">
+              <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logout</button>
+            </div>
           </nav>
       </div>
   </header>

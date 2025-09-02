@@ -93,7 +93,7 @@
       const libraryDiv = document.getElementById("library");
 
       if (!data.purchases || data.purchases.length === 0) {
-  libraryDiv.innerHTML = "<p class='no-purchases-text'>No purchases yet. ? Buy one <a href='issues.html' style='color:#e63946;text-decoration:underline;'>here</a></p>";
+  libraryDiv.innerHTML = "<p class='no-purchases-text'>No purchases yet? Buy one <a href='issues.html' style='color:#e63946;text-decoration:underline;'>here</a></p>";
   return;
       }
 
@@ -187,9 +187,9 @@
           if (data.email) {
             document.getElementById("nav-auth").innerHTML = `
               <div style="display:inline-block;position:relative;">
-                <span id="user-email" style="cursor:pointer;">Logged in as ${data.email} ▼</span>
-                <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;">
-                  <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;">Logout</button>
+                <span id="user-email" style="cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logged in as ${data.email} ▼</span>
+                <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;font-family:'Londrina Solid',sans-serif;">
+                  <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logout</button>
                 </div>
               </div>
             `;

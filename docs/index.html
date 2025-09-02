@@ -4,6 +4,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/lbs1rby.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GRIN</title>
@@ -50,7 +51,7 @@
     document.addEventListener('DOMContentLoaded', checkMobile);
   </script>
     <section class="hero">
-  <h2 class="knewave-regular" style="color:#e00101;">Latest Issue: <em>GRIN Volume 1</em></h2>
+  <h2 style="color:#070707;font-family:'cooper-black-std',serif;font-weight:400;font-style:normal;">Latest Issue: <em>GRIN Volume 1</em></h2>
         <span id="nav-auth" style="float:right;"></span>
         <div class="cover-image-container">
           <img src="grinzine_issue1_cover.PNG" alt="Grinzine Issue 1 Cover" class="cover-image">
@@ -74,7 +75,7 @@
           }
         </style>
       </nav>
-      <a class="btn" href="issues.html">See All</a>
+      <a class="deafult-btn" href="issues.html" style="font-family: 'Pathway Gothic One', sans-serif; text-decoration: none;">See All</a>
     </section>
   </main>
 
@@ -94,9 +95,9 @@
               if (data.email) {
                 document.getElementById("nav-auth").innerHTML = `
                   <div style="display:inline-block;position:relative;">
-                    <span id="user-email" style="cursor:pointer;">Logged in as ${data.email} ▼</span>
-                    <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;">
-                      <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;">Logout</button>
+                    <span id="user-email" style="cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logged in as ${data.email} ▼</span>
+                    <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;font-family:'Londrina Solid',sans-serif;">
+                      <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logout</button>
                     </div>
                   </div>
                 `;

@@ -125,29 +125,31 @@ async function updateNavAuth() {
       if (data.email) {
         document.getElementById("nav-auth").innerHTML = `
           <div style="display:inline-block;position:relative;">
-            <span id="user-email" style="cursor:pointer;">Logged in as ${data.email} ▼</span>
-            <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;">
-              <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;">Logout</button>
+            <span id="user-email" style="cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logged in as ${data.email} ▼</span>
+            <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;font-family:'Londrina Solid',sans-serif;">
+              <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logout</button>
             </div>
           </div>
         `;
-        document.getElementById("user-email").onclick = function() {
+        document.getElementById("user-email").onclick = function(e) {
+          e.stopPropagation();
           const dd = document.getElementById("logout-dropdown");
           dd.style.display = dd.style.display === "block" ? "none" : "block";
         };
-        document.getElementById("logout-btn").onclick = async function() {
+        document.getElementById("logout-btn").onclick = async function(e) {
+          e.stopPropagation();
           await fetch(`${API_BASE_URL}/auth/logout`, { method: "POST", credentials: "include" });
           window.location.href = "login.html";
         };
-          document.addEventListener("click", function(e) {
-            const navAuth = document.getElementById("nav-auth");
-            const dropdown = document.getElementById("logout-dropdown");
-            if (!dropdown || !navAuth) return;
-            // Only close if clicking outside the dropdown and outside the user-email span
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function(e) {
+          const dd = document.getElementById("logout-dropdown");
+          if (dd && dd.style.display === "block") {
             if (!e.target.closest("#logout-dropdown") && !e.target.closest("#user-email")) {
-              dropdown.style.display = "none";
+              dd.style.display = "none";
             }
-          });
+          }
+        });
       } else {
         document.getElementById("nav-auth").textContent = `Logged in`;
       }
