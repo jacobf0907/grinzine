@@ -303,7 +303,8 @@ main {
   transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
-.deafult-btn {
+
+.default-btn {
   background-color: #e63946;
   color: white;
   border: none;
@@ -314,7 +315,7 @@ main {
   font-family: "Londrina Solid", sans-serif;
 }
 
-.deafult-btn:hover {
+.default-btn:hover {
   background-color: #f1faee;
   color: #333;
 }
@@ -327,6 +328,6 @@ main {
   font-weight: bold;
 }
 
-.deafult-btn.active + .paywall-link {
+.paywall-btn.active + .paywall-link {
   display: block; /* Show the link when the button is clicked */
 }
