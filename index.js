@@ -3,11 +3,18 @@ require('dotenv').config();
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// Stripe mode switch
+const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
+const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
+  ? process.env.STRIPE_SECRET_KEY_LIVE
+  : process.env.STRIPE_SECRET_KEY_TEST;
+const STRIPE_WEBHOOK_SECRET = STRIPE_MODE === 'live'
+  ? process.env.STRIPE_WEBHOOK_SECRET_LIVE
+  : process.env.STRIPE_WEBHOOK_SECRET_TEST;
+const stripe = require('stripe')(STRIPE_SECRET_KEY);
 const path = require('path');
 
-
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+const endpointSecret = STRIPE_WEBHOOK_SECRET;
 const app = express();
 
 app.set('trust proxy', 1);
@@ -188,10 +195,18 @@ const prisma = new PrismaClient();
 const { ISSUES } = require('./issues');
 const ISSUE_MAP = {};
 for (const issue of ISSUES) {
-  ISSUE_MAP[issue.priceId] = {
-    name: issue.title,
-    pdfPath: issue.pdfPath
-  };
+  if (issue.priceIdLive) {
+    ISSUE_MAP[issue.priceIdLive] = {
+      name: issue.title,
+      pdfPath: issue.pdfPath
+    };
+  }
+  if (issue.priceIdTest) {
+    ISSUE_MAP[issue.priceIdTest] = {
+      name: issue.title,
+      pdfPath: issue.pdfPath
+    };
+  }
 }
 
 const { router: authRoutes, requireAuth } = require('./auth');
@@ -200,10 +215,15 @@ app.use('/auth', authRoutes);
 // Create checkout session route
 app.post('/create-checkout-session', requireAuth, async (req, res) => {
   try {
-    const { priceId } = req.body;
-    if (!priceId || !ISSUE_MAP[priceId]) {
+    let { priceId } = req.body;
+    // Find the issue by either live or test priceId
+    const issue = ISSUES.find(i => i.priceIdLive === priceId || i.priceIdTest === priceId);
+    if (!issue) {
       return res.status(400).json({ error: 'Invalid or unknown priceId' });
     }
+    // Select correct priceId for current mode
+    priceId = STRIPE_MODE === 'live' ? issue.priceIdLive : issue.priceIdTest;
+
     // Determine base URL for redirect
     const isLocal = req.headers.origin && req.headers.origin.includes('localhost');
     const baseUrl = isLocal

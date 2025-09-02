@@ -93,7 +93,7 @@
       const libraryDiv = document.getElementById("library");
 
       if (!data.purchases || data.purchases.length === 0) {
-  libraryDiv.innerHTML = "<p style='text-align:center; font-size:1.2em; margin-top:30px;'>No purchases yet.<br><span style='font-size:1em;'>? Buy one <a href='issues.html' style='color:#e63946;text-decoration:underline;'>here</a></span></p>";
+  libraryDiv.innerHTML = "<p class='no-purchases-text'>No purchases yet. ? Buy one <a href='issues.html' style='color:#e63946;text-decoration:underline;'>here</a></p>";
   return;
       }
 

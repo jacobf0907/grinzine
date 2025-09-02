@@ -1,3 +1,16 @@
+/* Responsive single-line for no purchases text */
+.no-purchases-text {
+  text-align: center;
+  font-size: 1.2em;
+  margin-top: 30px;
+  white-space: nowrap;
+}
+@media (max-width: 500px) {
+  .no-purchases-text {
+    white-space: normal;
+    font-size: 1em;
+  }
+}
 /* Knewave font class */
 .knewave-regular {
   font-family: "Knewave", system-ui;
