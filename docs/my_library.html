@@ -103,27 +103,18 @@
       data.purchases.forEach((p) => {
         if (seen.has(p.issue.title)) return;
         seen.add(p.issue.title);
-        let el;
+        const link = document.createElement("a");
+        link.href = "#";
+        link.textContent = p.issue.title;
+        link.className = "default-btn";
         if (p.issue.title === "GRIN Magazine Issue #1") {
-          el = document.createElement("button");
-          el.textContent = p.issue.title;
-          el.className = "default-btn";
-          el.style.fontFamily = "Londrina Solid, sans-serif";
-          el.onclick = function(e) {
-            e.preventDefault();
-            showFlipbook(p.issue.pdfPath, p.issue.title);
-          };
-        } else {
-          el = document.createElement("a");
-          el.href = "#";
-          el.textContent = p.issue.title;
-          el.className = "default-btn";
-          el.onclick = function(e) {
-            e.preventDefault();
-            showFlipbook(p.issue.pdfPath, p.issue.title);
-          };
+          link.style.fontFamily = 'Pathway Gothic One, sans-serif';
         }
-        libraryDiv.appendChild(el);
+        link.onclick = function(e) {
+          e.preventDefault();
+          showFlipbook(p.issue.pdfPath, p.issue.title);
+        };
+        libraryDiv.appendChild(link);
       });
     }
 

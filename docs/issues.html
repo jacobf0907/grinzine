@@ -65,8 +65,8 @@
               const unlocked = data.purchases.some(p => p.issue && p.issue.priceId === priceId);
               if (unlocked) {
                 btn.textContent = 'View This Issue';
-                btn.classList.remove('default-btn');
-                btn.classList.add('default-btn');
+                btn.classList.remove('deafult-btn');
+                btn.classList.add('deafult-btn');
                 btn.onclick = () => {
                   window.location.href = 'my_library.html';
                 };
@@ -87,7 +87,7 @@
         <img src="grinzine_issue1_cover.PNG" alt="Issue 1 Cover">
         <button 
           type="button" 
-          class="default-btn checkout-btn" 
+          class="deafult-btn checkout-btn" 
           data-price-id="price_1S2bHIF8I4vGxQh7byJ1ky6x" 
           style="display:block; margin:0 auto;">
           Unlock This Issue
@@ -100,7 +100,7 @@
         <img src="grinzine_issue2_cover.PNG" alt="Issue 2 Cover">
         <button 
           type="button" 
-          class="default-btn checkout-btn" 
+          class="deafult-btn checkout-btn"
           data-price-id="price_XXXXXXXXXXXX" 
           style="display:block; margin:0 auto;">
           Unlock This Issue
