@@ -45,9 +45,9 @@
     <h3 id="pdf-title"></h3>
     <canvas id="pdf-canvas" style="width:100%;max-width:900px;"></canvas>
     <div id="pdf-controls" style="margin:20px 0; display:flex; justify-content:center; gap:20px;">
-  <button id="prev-page" class="deafult-btn">Previous</button>
+  <button id="prev-page" class="default-btn">Previous</button>
   <span id="page-info"></span>
-  <button id="next-page" class="deafult-btn">Next</button>
+  <button id="next-page" class="default-btn">Next</button>
     </div>
   </div>
   <script>
@@ -107,7 +107,7 @@
         if (p.issue.title === "GRIN Magazine Issue #1") {
           el = document.createElement("button");
           el.textContent = p.issue.title;
-          el.className = "deafult-btn";
+          el.className = "default-btn";
           el.style.fontFamily = "Londrina Solid, sans-serif";
           el.onclick = function(e) {
             e.preventDefault();
@@ -224,7 +224,7 @@
           throw new Error();
         }
       } catch {
-  document.getElementById("nav-auth").innerHTML = `<button class='deafult-btn' style='font-family: "Londrina Solid", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  document.getElementById("nav-auth").innerHTML = `<button class='default-btn' style='font-family: "Londrina Solid", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
       }
     }
     updateNavAuth();

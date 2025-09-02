@@ -65,8 +65,8 @@
               const unlocked = data.purchases.some(p => p.issue && p.issue.priceId === priceId);
               if (unlocked) {
                 btn.textContent = 'View This Issue';
-                btn.classList.remove('deafult-btn');
-                btn.classList.add('deafult-btn');
+                btn.classList.remove('default-btn');
+                btn.classList.add('default-btn');
                 btn.onclick = () => {
                   window.location.href = 'my_library.html';
                 };
@@ -87,7 +87,7 @@
         <img src="grinzine_issue1_cover.PNG" alt="Issue 1 Cover">
         <button 
           type="button" 
-          class="deafult-btn checkout-btn" 
+          class="default-btn checkout-btn" 
           data-price-id="price_1S2bHIF8I4vGxQh7byJ1ky6x" 
           style="display:block; margin:0 auto;">
           Unlock This Issue
@@ -100,7 +100,7 @@
         <img src="grinzine_issue2_cover.PNG" alt="Issue 2 Cover">
         <button 
           type="button" 
-          class="deafult-btn checkout-btn" 
+          class="default-btn checkout-btn" 
           data-price-id="price_XXXXXXXXXXXX" 
           style="display:block; margin:0 auto;">
           Unlock This Issue
@@ -157,7 +157,7 @@ async function updateNavAuth() {
       throw new Error();
     }
   } catch {
-  document.getElementById("nav-auth").innerHTML = `<button class='deafult-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  document.getElementById("nav-auth").innerHTML = `<button class='default-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
   }
 }
 updateNavAuth();
@@ -329,7 +329,7 @@ resetLogoutTimer();
           throw new Error();
         }
       } catch {
-  document.getElementById("nav-auth").innerHTML = `<button class='deafult-btn' style='font-family: "Londrina Solid", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  document.getElementById("nav-auth").innerHTML = `<button class='default-btn' style='font-family: "Londrina Solid", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
       }
     }
     updateNavAuth();
