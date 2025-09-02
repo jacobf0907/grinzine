@@ -145,8 +145,17 @@ nav {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 70vh;
+  min-height: 80vh;
 }
+/* Center login form and button */
+.centered-login form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
 body {
   font-family: 'Pathway+Gothic+One', sans-serif;
   margin: 0;
