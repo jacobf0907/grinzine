@@ -28,7 +28,7 @@
         <span id="nav-auth" style="float:right;"></span>
       </nav>
     </div>
-    <span id="nav-auth" style="float:right; position:relative;"></span>
+  <!-- Removed duplicate nav-auth span to fix dropdown functionality -->
   </header>
 
   <main>
@@ -50,7 +50,7 @@
       window.addEventListener('resize', checkMobile);
       document.addEventListener('DOMContentLoaded', checkMobile);
 
-      // Show 'View This Issue' if already purchased
+      // For each issue, show 'View This Issue' if purchased, otherwise show 'Unlock This Issue'
       document.addEventListener('DOMContentLoaded', async () => {
         const API_BASE_URL = window.location.hostname === "localhost"
           ? "http://localhost:4242"
@@ -59,18 +59,32 @@
           const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
           if (res.ok) {
             const data = await res.json();
-            // Find all checkout buttons
-            document.querySelectorAll('.checkout-btn').forEach(btn => {
+            document.querySelectorAll('.issue').forEach(issueEl => {
+              const btn = issueEl.querySelector('.checkout-btn');
               const priceId = btn.getAttribute('data-price-id');
               const unlocked = data.purchases.some(p => p.issue && p.issue.priceId === priceId);
               if (unlocked) {
-                btn.textContent = 'View This Issue';
-                btn.classList.remove('default-btn');
-                btn.classList.add('default-btn');
-                btn.onclick = () => {
-                  window.location.href = 'my_library.html';
-                };
-                btn.disabled = false;
+                // Remove unlock button
+                btn.style.display = 'none';
+                // Add view button if not already present
+                if (!issueEl.querySelector('.view-btn')) {
+                  const viewBtn = document.createElement('button');
+                  viewBtn.type = 'button';
+                  viewBtn.className = 'default-btn view-btn';
+                  viewBtn.style.display = 'block';
+                  viewBtn.style.margin = '20px auto';
+                  viewBtn.style.fontFamily = "Londrina Solid, sans-serif";
+                  viewBtn.textContent = 'View This Issue';
+                  viewBtn.onclick = () => {
+                    window.location.href = 'my_library.html';
+                  };
+                  issueEl.appendChild(viewBtn);
+                }
+              } else {
+                // Show unlock button if not purchased
+                btn.style.display = 'block';
+                const viewBtn = issueEl.querySelector('.view-btn');
+                if (viewBtn) viewBtn.remove();
               }
             });
           }
