@@ -62,7 +62,12 @@
             document.querySelectorAll('.issue').forEach(issueEl => {
               const btn = issueEl.querySelector('.checkout-btn');
               const priceId = btn.getAttribute('data-price-id');
-              const unlocked = data.purchases.some(p => p.issue && p.issue.priceId === priceId);
+              // Robustly check if user has purchased this issue (supports live/test Stripe price IDs)
+              // This matches priceId, priceIdLive, or priceIdTest from backend for each purchase
+              const unlocked = data.purchases.some(p => {
+                if (!p.issue) return false;
+                return [p.issue.priceId, p.issue.priceIdLive, p.issue.priceIdTest].includes(priceId);
+              });
               if (unlocked) {
                 // Remove unlock button
                 btn.style.display = 'none';
