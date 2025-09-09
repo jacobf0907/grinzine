@@ -87,7 +87,7 @@ app.register(fastifyCsrf, {
 
 // CSRF token endpoint for frontend
 app.get('/csrf-token', async (request, reply) => {
-  return { csrfToken: request.csrfToken() };
+  return { csrfToken: request.csrfToken };
 });
 
 // Serve /pdfs with CORS headers (like Express)
