@@ -35,6 +35,7 @@ app.register(fastifyHelmet, {
 const ALLOWED_ORIGINS = [
   'https://www.grinzine.com',
   'https://grinzine.com',
+  'https://api.grinzine.com',
   `http://localhost:${process.env.PORT || 4242}`
 ];
 app.register(fastifyCors, {
@@ -47,7 +48,7 @@ app.register(fastifyCors, {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
 });
 
 // General rate limit: 100 requests per 15 minutes per IP
