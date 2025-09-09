@@ -4,6 +4,7 @@ require('dotenv').config();
 const path = require('path');
 const Fastify = require('fastify');
 const fastifyHelmet = require('@fastify/helmet');
+const fastifyFormbody = require('@fastify/formbody');
 const fastifyCors = require('@fastify/cors');
 const fastifyRateLimit = require('@fastify/rate-limit');
 const fastifyStatic = require('@fastify/static');
@@ -11,7 +12,22 @@ const fastifyCsrf = require('@fastify/csrf');
 const fastifyApi = require('./fastify-api');
 const fastifyAuth = require('./fastify-auth');
 
+
 const app = Fastify({ logger: true, trustProxy: true });
+
+// Explicitly add JSON body parser to ensure JSON requests are parsed
+app.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
+  try {
+    const json = JSON.parse(body);
+    done(null, json);
+  } catch (err) {
+    err.statusCode = 400;
+    done(err, undefined);
+  }
+});
+
+// Register formbody parser for urlencoded forms
+app.register(fastifyFormbody);
 
 // Security headers (Helmet equivalent)
 app.register(fastifyHelmet, {
