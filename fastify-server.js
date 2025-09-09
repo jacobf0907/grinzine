@@ -9,6 +9,7 @@ const fastifyCors = require('@fastify/cors');
 const fastifyRateLimit = require('@fastify/rate-limit');
 const fastifyStatic = require('@fastify/static');
 const fastifyCsrf = require('@fastify/csrf');
+const fastifyCookie = require('@fastify/cookie');
 const fastifyApi = require('./fastify-api');
 const fastifyAuth = require('./fastify-auth');
 
@@ -18,6 +19,9 @@ const app = Fastify({ logger: true, trustProxy: true });
 
 // Register formbody parser for urlencoded forms
 app.register(fastifyFormbody);
+
+// Register cookie parser for auth
+app.register(fastifyCookie);
 
 // Security headers (Helmet equivalent)
 app.register(fastifyHelmet, {
