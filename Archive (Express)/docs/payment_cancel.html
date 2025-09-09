@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRIN</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+</head>
+  <body>
+    <header>
+      <a href="index.html">
+        <img src="GrinLogo.png" alt="GRIN" style="width: 500px; height:auto;">
+      </a>
+      <div class="nav-center">
+          <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
+          <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="issues.html">Issues</a>
+            <a href="my_library.html">My Library</a>
+            <span id="nav-auth" style="float:right;"></span>
+          </nav>
+      </div>
+    </header>
+    <main>
+      <script>
+        // Mobile nav toggle
+        const navToggle = document.querySelector('.nav-toggle');
+        const nav = document.querySelector('nav');
+        function checkMobile() {
+          if (window.innerWidth <= 700) {
+            navToggle.style.display = 'block';
+            nav.classList.remove('open');
+          } else {
+            navToggle.style.display = 'none';
+            nav.classList.remove('open');
+          }
+        }
+        navToggle.addEventListener('click', () => {
+          nav.classList.toggle('open');
+        });
+        window.addEventListener('resize', checkMobile);
+        document.addEventListener('DOMContentLoaded', checkMobile);
+      </script>
+  <h2 class="headings">Payment Not Successful</h2>
+        <div style="max-width: 800px; width: 100%; margin: 0 auto;">
+            <p>Unfortunately, your payment could not be processed. Please check your payment details and try again.</p>
+            <p>If you continue to experience issues, please contact our support team for assistance.</p>
+            <a href="issues.html" class="default-btn" style="font-family:'Londrina Solid',sans-serif;text-decoration:none;">Go to Issues</a>
+        </div>
+        </main>
+    <footer>
+    <p>© 2025 GRIN • For the minds of the disturbed</p>
+    <script>
+    // Show login/signup or logged-in message with email and dropdown for logout
+    async function updateNavAuth() {
+      const API_BASE_URL = window.location.hostname === "localhost"
+        ? "http://localhost:4242"
+  : "https://api.grinzine.com";
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            document.getElementById("nav-auth").innerHTML = `
+              <div style="display:inline-block;position:relative;">
+                <span id="user-email" style="cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logged in as ${data.email} ▼</span>
+                <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;font-family:'Londrina Solid',sans-serif;">
+                  <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logout</button>
+                </div>
+              </div>
+            `;
+            document.getElementById("user-email").onclick = function() {
+              const dd = document.getElementById("logout-dropdown");
+              dd.style.display = dd.style.display === "block" ? "none" : "block";
+            };
+            document.getElementById("logout-btn").onclick = async function() {
+              await fetch(`${API_BASE_URL}/auth/logout`, { method: "POST", credentials: "include" });
+              window.location.href = "login.html";
+            };
+            document.addEventListener("click", function(e) {
+              if (!e.target.closest("#nav-auth")) {
+                document.getElementById("logout-dropdown").style.display = "none";
+              }
+            });
+          } else {
+            document.getElementById("nav-auth").textContent = `Logged in`;
+          }
+        } else {
+          throw new Error();
+        }
+      } catch {
+  document.getElementById("nav-auth").innerHTML = `<button class='default-btn' style='font-family: "Londrina Solid", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+      }
+    }
+    updateNavAuth();
+
+    // Auto-logout after inactivity (30 minutes)
+    let logoutTimer;
+    function resetLogoutTimer() {
+      clearTimeout(logoutTimer);
+      logoutTimer = setTimeout(async () => {
+        const API_BASE_URL = window.location.hostname === "localhost"
+          ? "http://localhost:4242"
+          : "https://api.grinzine.com";
+        await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
+        window.location.href = "login.html";
+      }, 30 * 60 * 1000); // 30 minutes
+    }
+    ["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(evt => {
+      window.addEventListener(evt, resetLogoutTimer);
+    });
+    resetLogoutTimer();
+    </script>
+  </footer>
+  </body>
+</html>

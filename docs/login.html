@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GRIN</title>
   <link rel="stylesheet" href="style.css">
+  <script src="csrf.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
@@ -79,7 +80,7 @@
         window.location.hostname === "localhost"
             ? "http://localhost:4242"
             : "https://api.grinzine.com";
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    const res = await csrfFetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -110,7 +111,7 @@
             : "https://api.grinzine.com";
       document.getElementById("reset-message").textContent = "Sending reset link...";
       try {
-        const res = await fetch(`${API_BASE_URL}/auth/request-reset`, {
+    const res = await csrfFetch(`${API_BASE_URL}/auth/request-reset`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email })

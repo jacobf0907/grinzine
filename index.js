@@ -1,6 +1,10 @@
+// ...existing code up to and including app.use(express.json()) after /webhook...
 console.log("Starting server...");
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
+const { body, validationResult } = require('express-validator');
+const csurf = require('csurf');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 // Stripe mode switch
@@ -15,7 +19,85 @@ const stripe = require('stripe')(STRIPE_SECRET_KEY);
 const path = require('path');
 
 const endpointSecret = STRIPE_WEBHOOK_SECRET;
+
 const app = express();
+app.use(helmet());
+
+// CSRF protection (must be after cookie-parser)
+app.use(require('cookie-parser')());
+app.use(csurf({ cookie: { httpOnly: true, sameSite: 'strict', secure: true } }));
+
+// Endpoint to get CSRF token for frontend
+app.get('/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+// Custom Content Security Policy (CSP)
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        'https://js.stripe.com',
+        'https://cdnjs.cloudflare.com',
+        'https://cdn.jsdelivr.net',
+        "'unsafe-inline'", 
+      ],
+      styleSrc: [
+        "'self'",
+        'https://fonts.googleapis.com',
+        'https://cdnjs.cloudflare.com',
+        'https://cdn.jsdelivr.net',
+        'https://js.stripe.com',
+        'https://use.typekit.net', // Adobe Fonts/Typekit
+        "'unsafe-inline'", // Remove if you do not use inline styles
+      ],
+      fontSrc: [
+        "'self'",
+        'https://fonts.gstatic.com',
+        'https://use.typekit.net', // Adobe Fonts/Typekit
+        'data:',
+      ],
+      imgSrc: [
+        "'self'",
+        'data:',
+        'https://js.stripe.com',
+        'https://www.instagram.com', // Instagram profile images/buttons
+      ],
+      connectSrc: [
+        "'self'",
+        'https://js.stripe.com',
+        'https://api.stripe.com',
+      ],
+      frameSrc: [
+        'https://js.stripe.com',
+        'https://www.instagram.com', // Instagram embeds (if used)
+      ],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+    },
+  })
+);
+
+// Example input validation and sanitization middleware for a POST route (e.g., /subscribe)
+app.post('/subscribe', [
+  body('email')
+    .isEmail().withMessage('Must be a valid email address')
+    .normalizeEmail(),
+  body('name')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('Name is required'),
+], (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  // ...handle valid input (e.g., save to DB, send email, etc.)
+  res.json({ message: 'Subscription successful!' });
+});
 
 app.set('trust proxy', 1);
 
@@ -95,7 +177,13 @@ app.use((err, req, res, next) => {
   }
 });
 
-// Basic error logging middleware
+
+// Catch-all 404 handler (should be after all other routes)
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
+
+// Basic error logging middleware (hide stack trace from client)
 app.use((err, req, res, next) => {
   console.error('Error:', err.message);
   if (err.stack) {
@@ -104,7 +192,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.use(require('cookie-parser')());
+
 
 // Webhook handler (must use raw body)
 app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
@@ -212,55 +300,87 @@ for (const issue of ISSUES) {
 const { router: authRoutes, requireAuth } = require('./auth');
 app.use('/auth', authRoutes);
 
-// Create checkout session route
-app.post('/create-checkout-session', requireAuth, async (req, res) => {
-  try {
-    let { priceId } = req.body;
-    // Find the issue by either live or test priceId
-    const issue = ISSUES.find(i => i.priceIdLive === priceId || i.priceIdTest === priceId);
-    if (!issue) {
-      return res.status(400).json({ error: 'Invalid or unknown priceId' });
+// Create checkout session route (with validation)
+app.post('/create-checkout-session',
+  requireAuth,
+  [
+    body('priceId')
+      .trim()
+      .escape()
+      .notEmpty().withMessage('priceId is required')
+      .isString().withMessage('priceId must be a string'),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-    // Select correct priceId for current mode
-    priceId = STRIPE_MODE === 'live' ? issue.priceIdLive : issue.priceIdTest;
+    try {
+      let { priceId } = req.body;
+      // Find the issue by either live or test priceId
+      const issue = ISSUES.find(i => i.priceIdLive === priceId || i.priceIdTest === priceId);
+      if (!issue) {
+        return res.status(400).json({ error: 'Invalid or unknown priceId' });
+      }
+      // Select correct priceId for current mode
+      priceId = STRIPE_MODE === 'live' ? issue.priceIdLive : issue.priceIdTest;
 
-    // Determine base URL for redirect
-    const isLocal = req.headers.origin && req.headers.origin.includes('localhost');
-    const baseUrl = isLocal
-      ? `http://localhost:${PORT}`
-      : process.env.ALLOWED_ORIGIN;
+      // Determine base URL for redirect
+      const isLocal = req.headers.origin && req.headers.origin.includes('localhost');
+      const baseUrl = isLocal
+        ? `http://localhost:${PORT}`
+        : process.env.ALLOWED_ORIGIN;
 
-    // Get user from JWT
-    const user = await prisma.user.findUnique({ where: { id: req.userId } });
-    if (!user) {
-      return res.status(401).json({ error: 'User not found' });
+      // Get user from JWT
+      const user = await prisma.user.findUnique({ where: { id: req.userId } });
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        customer_email: user.email,
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        success_url: `${baseUrl}/payment_success.html`,
+        cancel_url: `${baseUrl}/payment_cancel.html`,
+      });
+      res.json({ url: session.url });
+    } catch (err) {
+      console.error('Error creating checkout session:', err);
+      res.status(500).json({ error: err.message });
     }
-
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      customer_email: user.email,
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      success_url: `${baseUrl}/payment_success.html`,
-      cancel_url: `${baseUrl}/payment_cancel.html`,
-    });
-    res.json({ url: session.url });
-  } catch (err) {
-    console.error('Error creating checkout session:', err);
-    res.status(500).json({ error: err.message });
   }
-});
+);
 
 // Frontend will call this after redirect with ?session_id=...
 const purchases = {};
-app.get('/purchase-status/:sessionId', (req, res) => {
-  const record = purchases[req.params.sessionId];
-  if (!record) return res.status(404).json({ error: 'No purchase found' });
-  res.json(record);
-});
+app.get('/purchase-status/:sessionId',
+  [
+    // sessionId should be a string, alphanumeric, and not empty
+    (req, res, next) => {
+      req.params.sessionId = String(req.params.sessionId).trim();
+      next();
+    },
+    body('sessionId')
+      .optional()
+      .trim()
+      .escape(),
+  ],
+  (req, res) => {
+    const sessionId = req.params.sessionId;
+    // Optionally, add more strict validation here if you know the format
+    if (!sessionId || !/^[\w-]+$/.test(sessionId)) {
+      return res.status(400).json({ error: 'Invalid sessionId' });
+    }
+    const record = purchases[sessionId];
+    if (!record) return res.status(404).json({ error: 'No purchase found' });
+    res.json(record);
+  }
+);
 
 

@@ -3,11 +3,12 @@
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GRIN - Issues</title>
   <link rel="stylesheet" href="style.css">
+  <script src="csrf.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
@@ -39,7 +40,7 @@
     </div>
   </header>
 
-  <h2 style="text-align:center;font-family:'Pathway Gothic One',sans-serif;">My Library</h2>
+  <h2 class="headings" style="text-align:center;">My Library</h2>
   <div id="library" style="text-align:center;"></div>
   <div class="flipbook-container" id="flipbook-container" style="display:none;">
     <h3 id="pdf-title"></h3>
@@ -196,7 +197,7 @@
               dd.style.display = dd.style.display === "block" ? "none" : "block";
             };
             document.getElementById("logout-btn").onclick = async function() {
-              await fetch(`${API_BASE_URL}/auth/logout`, { method: "POST", credentials: "include" });
+              await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
               window.location.href = "login.html";
             };
             document.addEventListener("click", function(e) {
@@ -223,8 +224,11 @@
     let logoutTimer;
     function resetLogoutTimer() {
       clearTimeout(logoutTimer);
-      logoutTimer = setTimeout(() => {
-  fetch(`${window.location.hostname === "localhost" ? "http://localhost:4242" : "https://api.grinzine.com"}/auth/logout`, { method: "POST", credentials: "include" });
+      logoutTimer = setTimeout(async () => {
+        const API_BASE_URL = window.location.hostname === "localhost"
+          ? "http://localhost:4242"
+          : "https://api.grinzine.com";
+        await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
         window.location.href = "login.html";
       }, 30 * 60 * 1000); // 30 minutes
     }

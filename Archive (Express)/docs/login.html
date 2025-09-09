@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRIN</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="csrf.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+      <a href="index.html">
+        <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
+      </a>
+      <div class="nav-center">
+        <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="issues.html">Issues</a>
+          <a href="my_library.html">My Library</a>
+          <span id="nav-auth"></span>
+        </nav>
+      </div>
+  <script>
+    // Mobile nav toggle
+    const navToggle = document.querySelector('.nav-toggle');
+    const nav = document.querySelector('nav');
+    function checkMobile() {
+      if (window.innerWidth <= 700) {
+        navToggle.style.display = 'block';
+        nav.classList.remove('open');
+      } else {
+        navToggle.style.display = 'none';
+        nav.classList.remove('open');
+      }
+    }
+    navToggle.addEventListener('click', () => {
+      nav.classList.toggle('open');
+    });
+    window.addEventListener('resize', checkMobile);
+    document.addEventListener('DOMContentLoaded', checkMobile);
+  </script>
+  </header>
+
+  <body>
+  <div class="centered-login">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit" class="default-btn checkout-btn" style="display:block; margin:20px auto; font-family: 'Londrina Solid', sans-serif;">Login</button>
+    </form>
+
+    <p style="font-family: 'Pathway Gothic One', sans-serif; font-size: 1.1em;">Don’t have an account? <a href="signup.html">Sign up</a></p>
+
+    <p style="margin-top:20px; text-align:center;">
+      <a href="#" id="forgot-link" style="font-family: 'Pathway Gothic One', sans-serif; font-size: 1.1em; color: #e63946; text-decoration: underline;">Forgot password?</a>
+    </p>
+
+    <form id="reset-form" style="display:none; max-width:350px; margin:20px auto; text-align:center;">
+      <input type="email" id="reset-email" placeholder="Enter your email" required style="width:100%;margin-bottom:10px;" />
+      <button type="submit" class="default-btn checkout-btn" style="font-family: 'Londrina Solid', sans-serif;">Send Reset Link</button>
+      <p id="reset-message" style="margin-top:10px;font-size:1em;"></p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const API_BASE_URL =
+        window.location.hostname === "localhost"
+            ? "http://localhost:4242"
+            : "https://api.grinzine.com";
+    const res = await csrfFetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.location.href = "my_library.html";
+      } else {
+        alert(data.error || "Error logging in");
+      }
+    });
+
+    // Show reset form when 'Forgot password?' is clicked
+    document.getElementById("forgot-link").onclick = function(e) {
+      e.preventDefault();
+      document.getElementById("reset-form").style.display = "block";
+      document.getElementById("forgot-link").style.display = "none";
+    };
+
+    // Handle reset form submission
+    document.getElementById("reset-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const email = document.getElementById("reset-email").value;
+      const API_BASE_URL =
+        window.location.hostname === "localhost"
+            ? "http://localhost:4242"
+            : "https://api.grinzine.com";
+      document.getElementById("reset-message").textContent = "Sending reset link...";
+      try {
+    const res = await csrfFetch(`${API_BASE_URL}/auth/request-reset`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById("reset-message").textContent = "If your email is registered, a reset link has been sent.";
+        } else {
+          document.getElementById("reset-message").textContent = data.error || "Error sending reset link.";
+        }
+      } catch {
+        document.getElementById("reset-message").textContent = "Error sending reset link.";
+      }
+    });
+  </script>
+</body>
+  <footer>
+    <p>© 2025 GRIN • For the minds of the disturbed</p>
+  </footer>
+</body>
+</html>

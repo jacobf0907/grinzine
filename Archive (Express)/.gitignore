@@ -1,0 +1,12 @@
+# Ignore environment variables file
+.env
+
+# Ignore node modules folder
+node_modules/
+
+# Optional: Ignore logs
+*.log
+/generated/prisma
+
+# Ignore pdf files
+pdfs/

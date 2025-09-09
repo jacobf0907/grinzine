@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GRIN - Issues</title>
   <link rel="stylesheet" href="style.css">
+  <script src="csrf.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
@@ -156,7 +157,7 @@ async function updateNavAuth() {
         };
         document.getElementById("logout-btn").onclick = async function(e) {
           e.stopPropagation();
-          await fetch(`${API_BASE_URL}/auth/logout`, { method: "POST", credentials: "include" });
+          await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
           window.location.href = "login.html";
         };
         // Close dropdown when clicking outside
@@ -184,8 +185,11 @@ updateNavAuth();
 let logoutTimer;
 function resetLogoutTimer() {
   clearTimeout(logoutTimer);
-  logoutTimer = setTimeout(() => {
-  fetch(`${window.location.hostname === "localhost" ? "http://localhost:4242" : "https://api.grinzine.com"}/auth/logout`, { method: "POST", credentials: "include" });
+  logoutTimer = setTimeout(async () => {
+    const API_BASE_URL = window.location.hostname === "localhost"
+      ? "http://localhost:4242"
+      : "https://api.grinzine.com";
+    await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
     window.location.href = "login.html";
   }, 30 * 60 * 1000); // 30 minutes
 }
@@ -230,10 +234,9 @@ resetLogoutTimer();
       btn.textContent = 'Redirecting...';
 
       try {
-        const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
+        const response = await csrfFetch(`${API_BASE_URL}/create-checkout-session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({ priceId })
         });
 
@@ -295,11 +298,10 @@ resetLogoutTimer();
 
       // Proceed to checkout
       try {
-        const res = await fetch(`${API_BASE_URL}/create-checkout-session`, {
+        const res = await csrfFetch(`${API_BASE_URL}/create-checkout-session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ priceId }),
-          credentials: "include"
+          body: JSON.stringify({ priceId })
         });
         const data = await res.json();
         if (res.ok && data.url) {

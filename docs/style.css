@@ -1,3 +1,8 @@
+.headings {
+  font-family: "Fjalla One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 /* Responsive single-line for no purchases text */
 .no-purchases-text {
   text-align: center;

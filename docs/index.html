@@ -9,6 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GRIN</title>
   <link rel="stylesheet" href="style.css">
+  <script src="csrf.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
@@ -106,7 +107,7 @@
                   dd.style.display = dd.style.display === "block" ? "none" : "block";
                 };
                 document.getElementById("logout-btn").onclick = async function() {
-                  await fetch(`${API_BASE_URL}/auth/logout`, { method: "POST", credentials: "include" });
+                  await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
                   window.location.href = "login.html";
                 };
                 // Hide dropdown if clicking outside
@@ -132,7 +133,7 @@
         function resetLogoutTimer() {
           clearTimeout(logoutTimer);
           logoutTimer = setTimeout(() => {
-            fetch(`${window.location.hostname === "localhost" ? "http://localhost:4242" : "https://api.grinzine.com"}/auth/logout`, { method: "POST", credentials: "include" });
+            csrfFetch(`${window.location.hostname === "localhost" ? "http://localhost:4242" : "https://api.grinzine.com"}/auth/logout`, { method: "POST" });
             window.location.href = "login.html";
           }, 30 * 60 * 1000); // 30 minutes
         }

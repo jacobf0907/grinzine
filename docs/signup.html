@@ -3,11 +3,12 @@
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GRIN</title>
   <link rel="stylesheet" href="style.css">
+  <script src="csrf.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
@@ -25,10 +26,6 @@
             <a href="issues.html">Issues</a>
             <a href="my_library.html">My Library</a>
             <span id="nav-auth" style="float:right;"></span>
-            <span id="user-email" style="cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logged in as ${data.email} ▼</span>
-            <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;font-family:'Londrina Solid',sans-serif;">
-              <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logout</button>
-            </div>
           </nav>
       </div>
   </header>
@@ -54,11 +51,11 @@
         </script>
       <body>
   <div class="centered-login">
-    <h2 style="text-align:center;">Create an Account</h2>
+  <h2 class="headings" style="text-align:center;">Create an Account</h2>
     <form id="signup-form" style="display:flex; flex-direction:column; align-items:center; gap:12px; max-width:350px; margin:0 auto;">
       <input type="email" id="email" placeholder="Email" required style="width:100%;" />
       <input type="password" id="password" placeholder="Password" required style="width:100%;" />
-      <button type="submit" class="default-btn checkout-btn" style="display:block; margin:20px auto; font-family: 'Londrina Solid', sans-serif; width:100%;">Sign Up</button>
+  <button type="submit" class="default-btn checkout-btn" style="display:block; margin:20px auto; font-family: 'Londrina Solid', sans-serif; width:100%;">Sign Up</button>
     </form>
   <p style="font-family: 'Pathway Gothic One', sans-serif; font-size: 1.1em; text-align:center;">Already have an account? <a href="login.html">Log in</a></p>
   </div>
@@ -75,7 +72,7 @@
             : "https://api.grinzine.com";
 
       // Use /auth/signup to match backend route
-      const res = await fetch(`${API_BASE_URL}/auth/signup`, {
+      const res = await csrfFetch(`${API_BASE_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })

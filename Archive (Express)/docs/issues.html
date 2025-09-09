@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRIN - Issues</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="csrf.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <a href="index.html">
+      <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
+    </a>
+    <div class="nav-center">
+      <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="issues.html">Issues</a>
+        <a href="my_library.html">My Library</a>
+        <span id="nav-auth" style="float:right;"></span>
+      </nav>
+    </div>
+  <!-- Removed duplicate nav-auth span to fix dropdown functionality -->
+  </header>
+
+  <main>
+    <script>
+      const navToggle = document.querySelector('.nav-toggle');
+      const nav = document.querySelector('nav');
+      function checkMobile() {
+        if (window.innerWidth <= 700) {
+          navToggle.style.display = 'block';
+          nav.classList.remove('open');
+        } else {
+          navToggle.style.display = 'none';
+          nav.classList.remove('open');
+        }
+      }
+      navToggle.addEventListener('click', () => {
+        nav.classList.toggle('open');
+      });
+      window.addEventListener('resize', checkMobile);
+      document.addEventListener('DOMContentLoaded', checkMobile);
+
+      // For each issue, show 'View This Issue' if purchased, otherwise show 'Unlock This Issue'
+      document.addEventListener('DOMContentLoaded', async () => {
+        const API_BASE_URL = window.location.hostname === "localhost"
+          ? "http://localhost:4242"
+          : "https://api.grinzine.com";
+        try {
+          const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+          if (res.ok) {
+            const data = await res.json();
+            document.querySelectorAll('.issue').forEach(issueEl => {
+              const btn = issueEl.querySelector('.checkout-btn');
+              const issueId = btn.getAttribute('data-issue-id');
+              // Check if user has purchased this issue by matching issue.id from backend
+              const unlocked = data.purchases.some(p => {
+                return p.issue && String(p.issue.id) === String(issueId);
+              });
+              if (unlocked) {
+                // Remove unlock button
+                btn.style.display = 'none';
+                // Add view button if not already present
+                if (!issueEl.querySelector('.view-btn')) {
+                  const viewBtn = document.createElement('button');
+                  viewBtn.type = 'button';
+                  viewBtn.className = 'default-btn view-btn';
+                  viewBtn.style.display = 'block';
+                  viewBtn.style.margin = '20px auto';
+                  viewBtn.style.fontFamily = "Londrina Solid, sans-serif";
+                  viewBtn.textContent = 'View This Issue';
+                  viewBtn.onclick = () => {
+                    window.location.href = 'my_library.html';
+                  };
+                  issueEl.appendChild(viewBtn);
+                }
+              } else {
+                // Show unlock button if not purchased
+                btn.style.display = 'block';
+                const viewBtn = issueEl.querySelector('.view-btn');
+                if (viewBtn) viewBtn.remove();
+              }
+            });
+          }
+        } catch (err) {
+          // Not logged in or error, do nothing
+        }
+      });
+    </script>
+
+    <section class="issues">
+
+      <!-- Issue 1 -->
+      <article class="issue">
+        <img src="grinzine_issue1_cover.PNG" alt="Issue 1 Cover">
+        <button 
+          type="button" 
+          class="default-btn checkout-btn" 
+          data-price-id="price_1S2bHIF8I4vGxQh7byJ1ky6x" 
+          data-issue-id="1"
+          style="display:block; margin:0 auto;">
+          Unlock This Issue
+        </button>
+      </article>
+
+      <!--
+      Example: add Issue 2
+      <article class="issue">
+        <img src="grinzine_issue2_cover.PNG" alt="Issue 2 Cover">
+        <button 
+          type="button" 
+          class="default-btn checkout-btn"
+          data-price-id="price_XXXXXXXXXXXX" 
+          style="display:block; margin:0 auto;">
+          Unlock This Issue
+        </button>
+      </article>
+      -->
+
+    </section>
+  </main>
+
+  <footer>
+  <script>
+// Show login/signup or logged-in message with email and dropdown for logout
+async function updateNavAuth() {
+  const API_BASE_URL = window.location.hostname === "localhost"
+    ? "http://localhost:4242"
+  : "https://api.grinzine.com";
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.email) {
+        document.getElementById("nav-auth").innerHTML = `
+          <div style="display:inline-block;position:relative;">
+            <span id="user-email" style="cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logged in as ${data.email} ▼</span>
+            <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;font-family:'Londrina Solid',sans-serif;">
+              <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logout</button>
+            </div>
+          </div>
+        `;
+        document.getElementById("user-email").onclick = function(e) {
+          e.stopPropagation();
+          const dd = document.getElementById("logout-dropdown");
+          dd.style.display = dd.style.display === "block" ? "none" : "block";
+        };
+        document.getElementById("logout-btn").onclick = async function(e) {
+          e.stopPropagation();
+          await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
+          window.location.href = "login.html";
+        };
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function(e) {
+          const dd = document.getElementById("logout-dropdown");
+          if (dd && dd.style.display === "block") {
+            if (!e.target.closest("#logout-dropdown") && !e.target.closest("#user-email")) {
+              dd.style.display = "none";
+            }
+          }
+        });
+      } else {
+        document.getElementById("nav-auth").textContent = `Logged in`;
+      }
+    } else {
+      throw new Error();
+    }
+  } catch {
+  document.getElementById("nav-auth").innerHTML = `<button class='default-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  }
+}
+updateNavAuth();
+
+// Auto-logout after inactivity (30 minutes)
+let logoutTimer;
+function resetLogoutTimer() {
+  clearTimeout(logoutTimer);
+  logoutTimer = setTimeout(async () => {
+    const API_BASE_URL = window.location.hostname === "localhost"
+      ? "http://localhost:4242"
+      : "https://api.grinzine.com";
+    await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
+    window.location.href = "login.html";
+  }, 30 * 60 * 1000); // 30 minutes
+}
+["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(evt => {
+  window.addEventListener(evt, resetLogoutTimer);
+});
+resetLogoutTimer();
+  </script>
+    <p>© 2025 GRIN • For the minds of the disturbed</p>
+  </footer>
+
+  <script>
+  // Set API base URL depending on environment
+  const API_BASE_URL =
+    window.location.hostname === "localhost"
+      ? "http://localhost:4242"
+  : "https://api.grinzine.com";
+
+  document.querySelectorAll('.checkout-btn').forEach(btn => {
+    btn.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      const priceId = btn.getAttribute('data-price-id');
+
+      // Check login status by calling backend
+      let loggedIn = false;
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+        if (res.ok) {
+          loggedIn = true;
+        }
+      } catch {}
+
+      if (!loggedIn) {
+        // Store intended unlock in sessionStorage
+        sessionStorage.setItem('pendingUnlock', priceId);
+        window.location.href = "login.html";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Redirecting...';
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ priceId })
+        });
+
+        const data = await response.json();
+        if (data.url) {
+          window.location.href = data.url; //redirect to stripe checkout
+        } else {
+          alert('Error creating checkout session.');
+          btn.disabled = false;
+          btn.textContent = 'Unlock This Issue';
+        }
+      } 
+      catch (err) {
+        console.error('Error creating checkout session:', err);
+        alert('Error creating checkout session.');
+        btn.disabled = false;
+        btn.textContent = 'Unlock This Issue';
+      }
+    });
+  });
+
+  // After login, auto-trigger unlock if pending
+  window.addEventListener('DOMContentLoaded', () => {
+    const pendingUnlock = sessionStorage.getItem('pendingUnlock');
+    if (pendingUnlock) {
+      const btn = document.querySelector(`.checkout-btn[data-price-id="${pendingUnlock}"]`);
+      if (btn) {
+        sessionStorage.removeItem('pendingUnlock');
+        btn.click();
+      }
+    }
+  });
+
+  // Only check login status when unlock button is clicked
+  document.querySelectorAll('.checkout-btn').forEach(btn => {
+    btn.addEventListener('click', async (event) => {
+      event.preventDefault();
+      const priceId = btn.getAttribute('data-price-id');
+
+      // Check login status by calling backend
+      let loggedIn = false;
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          loggedIn = !!data.email;
+        }
+      } catch {}
+
+      if (!loggedIn) {
+        // Store intended unlock in sessionStorage
+        sessionStorage.setItem('pendingUnlock', priceId);
+        window.location.href = "login.html";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Redirecting...';
+
+      // Proceed to checkout
+      try {
+        const res = await fetch(`${API_BASE_URL}/create-checkout-session`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ priceId }),
+          credentials: "include"
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          window.location.href = data.url;
+        } else {
+          alert(data.error || "Error creating checkout session");
+        }
+      } catch (err) {
+        alert("Error connecting to server");
+      }
+    });
+  });
+
+  // After login, auto-trigger unlock if pending
+  window.addEventListener('DOMContentLoaded', () => {
+    const pendingUnlock = sessionStorage.getItem('pendingUnlock');
+    if (pendingUnlock) {
+      const btn = document.querySelector(`.checkout-btn[data-price-id="${pendingUnlock}"]`);
+      if (btn) {
+        btn.click();
+        sessionStorage.removeItem('pendingUnlock');
+      }
+    }
+  });
+
+</script>
+
+  <script src="scripts.js"></script>
+  <script>
+    // Show login/signup or logged-in message with email
+    async function updateNavAuth() {
+      const API_BASE_URL = window.location.hostname === "localhost"
+        ? "http://localhost:4242"
+  : "https://api.grinzine.com";
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            document.getElementById("nav-auth").textContent = `Logged in as ${data.email}`;
+          } else {
+            document.getElementById("nav-auth").textContent = `Logged in`;
+          }
+        } else {
+          throw new Error();
+        }
+      } catch {
+  document.getElementById("nav-auth").innerHTML = `<button class='default-btn' style='font-family: "Londrina Solid", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+      }
+    }
+    updateNavAuth();
+  </script>
