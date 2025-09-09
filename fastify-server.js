@@ -15,16 +15,6 @@ const fastifyAuth = require('./fastify-auth');
 
 const app = Fastify({ logger: true, trustProxy: true });
 
-// Explicitly add JSON body parser to ensure JSON requests are parsed
-app.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
-  try {
-    const json = JSON.parse(body);
-    done(null, json);
-  } catch (err) {
-    err.statusCode = 400;
-    done(err, undefined);
-  }
-});
 
 // Register formbody parser for urlencoded forms
 app.register(fastifyFormbody);
