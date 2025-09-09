@@ -34,87 +34,102 @@ for (const issue of ISSUES) {
 
 
 async function apiPlugin(fastify, opts) {
-  // Stripe webhook (raw body)
-  fastify.addContentTypeParser('application/json', { parseAs: 'buffer' }, function (req, body, done) {
-    done(null, body);
-  });
-
   /**
    * Stripe webhook endpoint
    * @route POST /webhook
    */
-  fastify.post('/webhook', async (request, reply) => {
-    try {
-      fastify.log.info('--- Stripe Webhook Received ---');
-      const sig = request.headers['stripe-signature'];
-      let event;
+  fastify.route({
+    method: 'POST',
+    url: '/webhook',
+    config: {},
+    schema: {},
+    // Only for this route, override the content type parser
+    bodyLimit: 1048576, // 1MB
+    handler: async (request, reply) => {
       try {
-        event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_WEBHOOK_SECRET);
-      } catch (err) {
-        fastify.log.error('Webhook signature verification failed:', err.message);
-        return reply.status(400).send(`Webhook Error: ${err.message}`);
-      }
-
-      if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
-        const email = session.customer_email;
-        const stripeId = session.id;
-        fastify.log.info('--- Stripe Webhook Event ---');
-        // Mask sensitive data in logs for production
-        fastify.log.info('Email:', email);
-        fastify.log.info('StripeId:', stripeId);
+        fastify.log.info('--- Stripe Webhook Received ---');
+        const sig = request.headers['stripe-signature'];
+        let event;
         try {
-          // Find or create user
-          let user = await prisma.user.findUnique({ where: { email } });
-          if (!user) {
-            user = await prisma.user.create({ data: { email, password: '' } });
-            fastify.log.info('Created new user:', user.id);
-          } else {
-            fastify.log.info('Found user:', user.id);
-          }
+          event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_WEBHOOK_SECRET);
+        } catch (err) {
+          fastify.log.error('Webhook signature verification failed:', err.message);
+          return reply.status(400).send(`Webhook Error: ${err.message}`);
+        }
 
-          const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-          for (const item of lineItems.data) {
-            const issueInfo = ISSUE_MAP[item.price.id];
-            fastify.log.info('PriceId:', item.price.id, 'IssueInfo:', issueInfo ? issueInfo.name : 'Unknown');
-            if (issueInfo) {
-              // Find the Issue in the database by title
-              const issue = await prisma.issue.findUnique({ where: { title: issueInfo.name } });
-              if (!issue) {
-                fastify.log.warn(`No matching Issue in DB for title: ${issueInfo.name}`);
-                continue;
-              }
-              // Prevent duplicate purchases by stripeId
-              const existing = await prisma.purchase.findUnique({ where: { stripeId } });
-              if (!existing) {
-                try {
-                  await prisma.purchase.create({
-                    data: {
-                      userId: user.id,
-                      issueId: issue.id,
-                      stripeId: stripeId
-                    }
-                  });
-                  fastify.log.info(`Purchased: ${issue.title} for user ${email}`);
-                } catch (err) {
-                  fastify.log.error('Error creating purchase:', err);
+        if (event.type === 'checkout.session.completed') {
+          const session = event.data.object;
+          const email = session.customer_email;
+          const stripeId = session.id;
+          fastify.log.info('--- Stripe Webhook Event ---');
+          // Mask sensitive data in logs for production
+          fastify.log.info('Email:', email);
+          fastify.log.info('StripeId:', stripeId);
+          try {
+            // Find or create user
+            let user = await prisma.user.findUnique({ where: { email } });
+            if (!user) {
+              user = await prisma.user.create({ data: { email, password: '' } });
+              fastify.log.info('Created new user:', user.id);
+            } else {
+              fastify.log.info('Found user:', user.id);
+            }
+
+            const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+            for (const item of lineItems.data) {
+              const issueInfo = ISSUE_MAP[item.price.id];
+              fastify.log.info('PriceId:', item.price.id, 'IssueInfo:', issueInfo ? issueInfo.name : 'Unknown');
+              if (issueInfo) {
+                // Find the Issue in the database by title
+                const issue = await prisma.issue.findUnique({ where: { title: issueInfo.name } });
+                if (!issue) {
+                  fastify.log.warn(`No matching Issue in DB for title: ${issueInfo.name}`);
+                  continue;
+                }
+                // Prevent duplicate purchases by stripeId
+                const existing = await prisma.purchase.findUnique({ where: { stripeId } });
+                if (!existing) {
+                  try {
+                    await prisma.purchase.create({
+                      data: {
+                        userId: user.id,
+                        issueId: issue.id,
+                        stripeId: stripeId
+                      }
+                    });
+                    fastify.log.info(`Purchased: ${issue.title} for user ${email}`);
+                  } catch (err) {
+                    fastify.log.error('Error creating purchase:', err);
+                  }
+                } else {
+                  fastify.log.info(`Purchase already exists for stripeId: ${stripeId}`);
                 }
               } else {
-                fastify.log.info(`Purchase already exists for stripeId: ${stripeId}`);
+                fastify.log.warn(`Unknown Price ID in webhook: ${item.price.id}`);
               }
-            } else {
-              fastify.log.warn(`Unknown Price ID in webhook: ${item.price.id}`);
             }
+          } catch (e) {
+            fastify.log.error('Error processing purchase:', e);
           }
-        } catch (e) {
-          fastify.log.error('Error processing purchase:', e);
         }
-      }
 
-      reply.code(200).send();
-    } catch (err) {
-      fastify.log.error('Webhook handler error:', err);
-      reply.status(500).send({ error: 'Internal server error' });
+        reply.code(200).send();
+      } catch (err) {
+        fastify.log.error('Webhook handler error:', err);
+        reply.status(500).send({ error: 'Internal server error' });
+      }
+    },
+    // This attaches a content type parser only for this route
+    preHandler: (request, reply, done) => {
+      // Override content type parser for this route only
+      request.rawBody = '';
+      request.raw.on('data', (chunk) => {
+        request.rawBody += chunk;
+      });
+      request.raw.on('end', () => {
+        request.body = Buffer.from(request.rawBody);
+        done();
+      });
     }
   });
 
