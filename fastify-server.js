@@ -1,5 +1,6 @@
 
 // fastify-server.js
+console.log('DEBUG: All environment variables at startup:', process.env);
 console.log('DEBUG: STRIPE_MODE:', process.env.STRIPE_MODE);
 console.log('DEBUG: STRIPE_SECRET_KEY_TEST:', process.env.STRIPE_SECRET_KEY_TEST ? '[set]' : '[not set]');
 require('dotenv').config();
