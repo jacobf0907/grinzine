@@ -186,11 +186,14 @@ async function apiPlugin(fastify, opts) {
       }
     }
   }, async (request, reply) => {
+    fastify.log.info('[CHECKOUT] Incoming request body:', request.body);
+    fastify.log.info('[CHECKOUT] Authenticated userId:', request.userId);
     try {
       const { priceId } = request.body;
       // Find the issue by either live or test priceId
       const issue = ISSUES.find(i => i.priceIdLive === priceId || i.priceIdTest === priceId);
       if (!issue) {
+        fastify.log.warn('[CHECKOUT] Invalid or unknown priceId:', priceId);
         return reply.status(400).send({ error: 'Invalid or unknown priceId' });
       }
       // Select correct priceId for current mode
@@ -205,8 +208,15 @@ async function apiPlugin(fastify, opts) {
       // Get user from JWT
       const user = await prisma.user.findUnique({ where: { id: request.userId } });
       if (!user) {
+        fastify.log.warn('[CHECKOUT] User not found for userId:', request.userId);
         return reply.status(401).send({ error: 'User not found' });
       }
+
+      fastify.log.info('[CHECKOUT] Creating Stripe session with:', {
+        email: user.email,
+        selectedPriceId,
+        baseUrl
+      });
 
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
@@ -220,6 +230,7 @@ async function apiPlugin(fastify, opts) {
         success_url: `${baseUrl}/payment_success.html`,
         cancel_url: `${baseUrl}/payment_cancel.html`,
       });
+      fastify.log.info('[CHECKOUT] Stripe session created:', session.id);
       reply.send({ url: session.url });
     } catch (err) {
       if (!err) {
@@ -227,15 +238,15 @@ async function apiPlugin(fastify, opts) {
       }
       fastify.log.error('STRIPE_MODE:', STRIPE_MODE);
       fastify.log.error('STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
-      fastify.log.error('Error creating checkout session:', err);
-      fastify.log.error('Error as string:', String(err));
-      fastify.log.error('Error type:', typeof err);
-      if (err && err.stack) fastify.log.error('Stack trace:', err.stack);
-      if (err && typeof err === 'object') fastify.log.error('Error object:', JSON.stringify(err, null, 2));
+      fastify.log.error('[CHECKOUT] Error creating checkout session:', err);
+      fastify.log.error('[CHECKOUT] Error as string:', String(err));
+      fastify.log.error('[CHECKOUT] Error type:', typeof err);
+      if (err && err.stack) fastify.log.error('[CHECKOUT] Stack trace:', err.stack);
+      if (err && typeof err === 'object') fastify.log.error('[CHECKOUT] Error object:', JSON.stringify(err, null, 2));
       // Try to log the error using util.inspect for deep objects
       try {
         const util = require('util');
-        fastify.log.error('Error (util.inspect):', util.inspect(err, { depth: 5 }));
+        fastify.log.error('[CHECKOUT] Error (util.inspect):', util.inspect(err, { depth: 5 }));
       } catch (e) {}
       reply.status(500).send({ error: 'Internal server error', details: err && err.message });
     }
