@@ -18,7 +18,7 @@ function setTokenCookie(reply, userId) {
   reply.setCookie('token', token, {
     httpOnly: true,
     sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
+    secure: true, // Always secure in production
     path: '/',
     maxAge: 7 * 24 * 60 * 60,
   });
