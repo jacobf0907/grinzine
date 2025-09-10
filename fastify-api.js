@@ -223,8 +223,15 @@ async function apiPlugin(fastify, opts) {
       reply.send({ url: session.url });
     } catch (err) {
       fastify.log.error('Error creating checkout session:', err);
+      fastify.log.error('Error as string:', String(err));
+      fastify.log.error('Error type:', typeof err);
       if (err && err.stack) fastify.log.error('Stack trace:', err.stack);
       if (err && typeof err === 'object') fastify.log.error('Error object:', JSON.stringify(err, null, 2));
+      // Try to log the error using util.inspect for deep objects
+      try {
+        const util = require('util');
+        fastify.log.error('Error (util.inspect):', util.inspect(err, { depth: 5 }));
+      } catch (e) {}
       reply.status(500).send({ error: 'Internal server error', details: err && err.message });
     }
   });
