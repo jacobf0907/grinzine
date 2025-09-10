@@ -258,17 +258,6 @@ resetLogoutTimer();
     });
   });
 
-  // After login, auto-trigger unlock if pending
-  window.addEventListener('DOMContentLoaded', () => {
-    const pendingUnlock = sessionStorage.getItem('pendingUnlock');
-    if (pendingUnlock) {
-      const btn = document.querySelector(`.checkout-btn[data-price-id="${pendingUnlock}"]`);
-      if (btn) {
-        sessionStorage.removeItem('pendingUnlock');
-        btn.click();
-      }
-    }
-  });
 
   // Only check login status when unlock button is clicked
   document.querySelectorAll('.checkout-btn').forEach(btn => {
@@ -315,13 +304,27 @@ resetLogoutTimer();
     });
   });
 
-  // After login, auto-trigger unlock if pending
-  window.addEventListener('DOMContentLoaded', () => {
+  // After login, auto-trigger unlock if pending and user is logged in
+  window.addEventListener('DOMContentLoaded', async () => {
     const pendingUnlock = sessionStorage.getItem('pendingUnlock');
     if (pendingUnlock) {
-      const btn = document.querySelector(`.checkout-btn[data-price-id="${pendingUnlock}"]`);
-      if (btn) {
-        btn.click();
+      // Check login status
+      let loggedIn = false;
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          loggedIn = !!data.email;
+        }
+      } catch {}
+      if (loggedIn) {
+        const btn = document.querySelector(`.checkout-btn[data-price-id="${pendingUnlock}"]`);
+        if (btn) {
+          btn.click();
+          sessionStorage.removeItem('pendingUnlock');
+        }
+      } else {
+        // Not logged in, do not auto-trigger
         sessionStorage.removeItem('pendingUnlock');
       }
     }
