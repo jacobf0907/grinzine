@@ -223,7 +223,9 @@ async function apiPlugin(fastify, opts) {
       reply.send({ url: session.url });
     } catch (err) {
       fastify.log.error('Error creating checkout session:', err);
-      reply.status(500).send({ error: 'Internal server error' });
+      if (err && err.stack) fastify.log.error('Stack trace:', err.stack);
+      if (err && typeof err === 'object') fastify.log.error('Error object:', JSON.stringify(err, null, 2));
+      reply.status(500).send({ error: 'Internal server error', details: err && err.message });
     }
   });
 
