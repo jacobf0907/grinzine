@@ -222,6 +222,11 @@ async function apiPlugin(fastify, opts) {
       });
       reply.send({ url: session.url });
     } catch (err) {
+      if (!err) {
+        fastify.log.error('Checkout session error: err is undefined or null!');
+      }
+      fastify.log.error('STRIPE_MODE:', STRIPE_MODE);
+      fastify.log.error('STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
       fastify.log.error('Error creating checkout session:', err);
       fastify.log.error('Error as string:', String(err));
       fastify.log.error('Error type:', typeof err);
