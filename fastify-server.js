@@ -69,9 +69,9 @@ app.register(fastifyRateLimit, {
   keyGenerator: (req) => req.ip,
 });
 
-// Stricter rate limit for login and password reset
+// Stricter rate limit for login and password reset (even less strict)
 app.register(fastifyRateLimit, {
-  max: 10,
+  max: 50,
   timeWindow: '15 minutes',
   keyGenerator: (req) => req.ip,
   allowList: [],
