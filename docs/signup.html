@@ -55,7 +55,8 @@
     <form id="signup-form" style="display:flex; flex-direction:column; align-items:center; gap:12px; max-width:350px; margin:0 auto;">
       <input type="email" id="email" placeholder="Email" required style="width:100%;" />
       <input type="password" id="password" placeholder="Password" required style="width:100%;" />
-  <button type="submit" class="default-btn checkout-btn" style="display:block; margin:20px auto; font-family: 'Londrina Solid', sans-serif; width:100%;">Sign Up</button>
+      <input type="password" id="confirm-password" placeholder="Confirm Password" required style="width:100%;" />
+      <button type="submit" class="default-btn checkout-btn" style="display:block; margin:20px auto; font-family: 'Londrina Solid', sans-serif; width:100%;">Sign Up</button>
     </form>
   <p style="font-family: 'Pathway Gothic One', sans-serif; font-size: 1.1em; text-align:center;">Already have an account? <a href="login.html">Log in</a></p>
   </div>
@@ -66,6 +67,11 @@
 
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
       const API_BASE_URL =
         window.location.hostname === "localhost"
             ? "http://localhost:4242"

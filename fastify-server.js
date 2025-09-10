@@ -134,6 +134,11 @@ app.setErrorHandler(function (error, request, reply) {
     reply.status(403).send({ error: 'CORS error: Origin not allowed' });
     return;
   }
+  // Handle rate limit errors
+  if (error && (error.message === 'Too many attempts, please try again later.' || error.error === 'Too many attempts, please try again later.')) {
+    reply.status(429).send({ error: 'Too many attempts, please try again later.' });
+    return;
+  }
   // Hide stack trace from client
   app.log.error(error);
   reply.status(500).send({ error: 'Internal server error' });
