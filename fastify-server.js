@@ -1,9 +1,13 @@
 
 // fastify-server.js
+// Only load .env in development
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+// Debug logs
 console.log('DEBUG: All environment variables at startup:', process.env);
 console.log('DEBUG: STRIPE_MODE:', process.env.STRIPE_MODE);
 console.log('DEBUG: STRIPE_SECRET_KEY_TEST:', process.env.STRIPE_SECRET_KEY_TEST ? '[set]' : '[not set]');
-require('dotenv').config();
 const path = require('path');
 const Fastify = require('fastify');
 const fastifyHelmet = require('@fastify/helmet');
