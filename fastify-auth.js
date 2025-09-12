@@ -253,4 +253,4 @@ async function authPlugin(fastify, opts) {
   });
 }
 
-module.exports = fp(authPlugin);
+module.exports = fp(authPlugin, { encapsulate: false });

@@ -343,4 +343,4 @@ async function apiPlugin(fastify, opts) {
   // Add more routes (checkout session, purchase-status, etc.) here...
 }
 
-module.exports = fp(apiPlugin);
+module.exports = fp(apiPlugin, { encapsulate: false });
