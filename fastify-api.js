@@ -5,15 +5,6 @@ const Stripe = require('stripe');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { ISSUES } = require('./issues');
-
-const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
-const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
-  ? process.env.STRIPE_SECRET_KEY_LIVE
-  : process.env.STRIPE_SECRET_KEY_TEST;
-const STRIPE_WEBHOOK_SECRET = STRIPE_MODE === 'live'
-  ? process.env.STRIPE_WEBHOOK_SECRET_LIVE
-  : process.env.STRIPE_WEBHOOK_SECRET_TEST;
-const stripe = Stripe(STRIPE_SECRET_KEY);
 const PORT = process.env.PORT || 4242;
 
 const ISSUE_MAP = {};
@@ -48,6 +39,15 @@ async function apiPlugin(fastify, opts) {
     handler: async (request, reply) => {
       try {
         fastify.log.info('--- Stripe Webhook Received ---');
+        // Always get env vars at request time
+        const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
+        const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
+          ? process.env.STRIPE_SECRET_KEY_LIVE
+          : process.env.STRIPE_SECRET_KEY_TEST;
+        const STRIPE_WEBHOOK_SECRET = STRIPE_MODE === 'live'
+          ? process.env.STRIPE_WEBHOOK_SECRET_LIVE
+          : process.env.STRIPE_WEBHOOK_SECRET_TEST;
+        const stripe = Stripe(STRIPE_SECRET_KEY);
         const sig = request.headers['stripe-signature'];
         let event;
         try {
