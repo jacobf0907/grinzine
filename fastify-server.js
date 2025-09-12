@@ -48,6 +48,10 @@ app.post('/create-checkout-session-test', async (request, reply) => {
   app.log.info('[CHECKOUT-TEST] STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
   try {
     const { priceId, userId } = request.body || {};
+    if (!userId) {
+      app.log.error('[CHECKOUT-TEST] Missing userId in request body');
+      return reply.status(400).send({ error: 'Missing userId in request body' });
+    }
     const issue = ISSUES.find(i => i.priceIdLive === priceId || i.priceIdTest === priceId);
     if (!issue) {
       app.log.warn('[CHECKOUT-TEST] Invalid or unknown priceId:', priceId);
