@@ -1,4 +1,5 @@
 
+
 console.log('DEPLOY TEST: 2025-09-12 :: unique log for troubleshooting env issue');
 // Only load .env in development
 if (process.env.NODE_ENV !== 'production') {
@@ -26,6 +27,37 @@ const prisma = new PrismaClient();
 const { ISSUES } = require('./issues');
 
 const app = Fastify({ logger: true, trustProxy: true });
+
+// --- TEMPORARY: Protected test route in main context to debug plugin encapsulation ---
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
+
+// Inline requireAuth logic (copied from fastify-auth.js)
+async function requireAuthMain(request, reply) {
+  const token = request.cookies.token;
+  app.log.info('[requireAuthMain] request.raw.headers:', request.raw.headers);
+  app.log.info('[requireAuthMain] request.cookies:', request.cookies);
+  app.log.info('[requireAuthMain] token:', token);
+  if (!token) {
+    app.log.error('[requireAuthMain] No token found in cookies');
+    return reply.status(401).send({ error: 'Not authenticated' });
+  }
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    app.log.info('[requireAuthMain] decoded JWT:', decoded);
+    request.userId = decoded.userId;
+    app.log.info('[requireAuthMain] set request.userId:', request.userId);
+  } catch (err) {
+    app.log.error('[requireAuthMain] Invalid token:', err);
+    return reply.status(401).send({ error: 'Invalid token' });
+  }
+}
+
+// Protected test route
+app.get('/protected-test-main', { preHandler: requireAuthMain }, async (request, reply) => {
+  app.log.info('[protected-test-main] userId:', request.userId);
+  reply.send({ message: 'Authenticated in main context!', userId: request.userId });
+});
 
 // Minimal /create-checkout-session route for env var testing (bypasses plugin)
 app.post('/create-checkout-session-test', async (request, reply) => {
