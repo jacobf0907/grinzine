@@ -187,6 +187,7 @@ async function apiPlugin(fastify, opts) {
     }
   }, async (request, reply) => {
     // Log all environment variables at request time
+    fastify.log.info('[CHECKOUT] FULL ENV:', process.env);
     fastify.log.info('[CHECKOUT] STRIPE ENV VARS:', {
       STRIPE_MODE: process.env.STRIPE_MODE,
       STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE,
