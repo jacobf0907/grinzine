@@ -1,14 +1,3 @@
-const originalCreateCheckoutSession = fastify.post;
-fastify.post = function (path, opts, handler) {
-  if (path === '/create-checkout-session') {
-    const wrappedHandler = async function (request, reply) {
-      fastify.log.info('[DEBUG] request.raw.headers:', request.raw.headers);
-      return handler(request, reply);
-    };
-    return originalCreateCheckoutSession.call(this, path, opts, wrappedHandler);
-  }
-  return originalCreateCheckoutSession.call(this, path, opts, handler);
-};
 // (Removed monkey-patch for fastify.post. Debug log is in the correct handler.)
 // fastify-api.js
 
