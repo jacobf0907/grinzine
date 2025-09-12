@@ -133,11 +133,9 @@ app.register(fastifyHelmet, {
 // CORS
 const ALLOWED_ORIGINS = [
   'https://www.grinzine.com',
-  'https://grinzine.com',
   'https://api.grinzine.com',
-  'https://grinzine.fly.dev',
-  `http://localhost:${process.env.PORT || 4242}`,
-  'http://localhost:4242'
+  'http://localhost:4242',
+  `http://localhost:${process.env.PORT || 4242}`
 ];
 app.register(fastifyCors, {
   origin: (origin, cb) => {
@@ -182,8 +180,8 @@ app.register(fastifyRateLimit, {
 app.register(fastifyCsrf, {
   cookie: {
     httpOnly: true,
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: true,
   }
 });
 

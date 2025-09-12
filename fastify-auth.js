@@ -26,10 +26,11 @@ function setTokenCookie(reply, userId) {
   const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
   reply.setCookie('token', token, {
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     secure: true, // Always secure in production
     path: '/',
     maxAge: 7 * 24 * 60 * 60,
+    domain: process.env.NODE_ENV === 'production' ? '.grinzine.com' : undefined
   });
 }
 
