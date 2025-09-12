@@ -78,7 +78,13 @@ app.post('/create-checkout-session-test', async (request, reply) => {
     app.log.info('[CHECKOUT-TEST] Stripe session created:', session.id);
     reply.send({ url: session.url });
   } catch (err) {
-    app.log.error('[CHECKOUT-TEST] Error creating checkout session:', err);
+    app.log.error('[CHECKOUT-TEST] Error creating checkout session: ' + (err && err.message ? err.message : String(err)));
+    try {
+      app.log.error('[CHECKOUT-TEST] Error object: ' + JSON.stringify(err, Object.getOwnPropertyNames(err)));
+    } catch (jsonErr) {
+      app.log.error('[CHECKOUT-TEST] Error object could not be stringified');
+    }
+    app.log.error('[CHECKOUT-TEST] Error stack: ' + (err && err.stack ? err.stack : 'No stack'));
     reply.status(500).send({ error: 'Internal server error', details: err && err.message });
   }
 });
