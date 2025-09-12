@@ -1,3 +1,4 @@
+
 console.log('DEPLOY TEST: 2025-09-12 :: unique log for troubleshooting env issue');
 // Only load .env in development
 if (process.env.NODE_ENV !== 'production') {
@@ -26,6 +27,13 @@ const { ISSUES } = require('./issues');
 
 const app = Fastify({ logger: true, trustProxy: true });
 
+// Debug route to check cookie parsing in main context
+app.get('/cookie-debug', async (request, reply) => {
+  return {
+    headers: request.headers,
+    cookies: request.cookies
+  };
+});
 
 
 // Minimal /create-checkout-session route for env var testing (bypasses plugin)
