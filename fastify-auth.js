@@ -39,6 +39,8 @@ function setTokenCookie(reply, userId) {
  * @param {*} opts
  */
 async function authPlugin(fastify, opts) {
+  // Register fastify-cookie in plugin context for cookie parsing
+  await fastify.register(require('@fastify/cookie'));
   // DEBUG: Log env vars at plugin registration
   fastify.log.info('[fastify-auth.js] ENV at plugin registration:', {
     GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',

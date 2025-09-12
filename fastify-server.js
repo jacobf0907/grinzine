@@ -27,15 +27,6 @@ const { ISSUES } = require('./issues');
 
 const app = Fastify({ logger: true, trustProxy: true });
 
-// Debug route to check cookie parsing in main context
-app.get('/cookie-debug', async (request, reply) => {
-  return {
-    headers: request.headers,
-    cookies: request.cookies
-  };
-});
-
-
 // Minimal /create-checkout-session route for env var testing (bypasses plugin)
 app.post('/create-checkout-session-test', async (request, reply) => {
   app.log.info('[CHECKOUT-TEST] FULL ENV:', process.env);
