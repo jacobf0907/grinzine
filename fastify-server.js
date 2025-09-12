@@ -147,7 +147,7 @@ app.register(fastifyCors, {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'X-CSRF-Token'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'X-CSRF-Token', 'cookie'],
 });
 
 // General rate limit: 100 requests per 15 minutes per IP
