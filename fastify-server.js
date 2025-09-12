@@ -95,7 +95,11 @@ app.get('/env-test', async (request, reply) => {
 
 // Debug route to return all environment variables
 app.get('/env-debug', async (request, reply) => {
-  return process.env;
+    Object.keys(process.env).forEach(key => {
+        app.log.info(`[ENV-DEBUG] ${key}: ${process.env[key]}`);
+    });
+    process.env.TEST_SECRET;
+    return process.env;
 });
 
 
