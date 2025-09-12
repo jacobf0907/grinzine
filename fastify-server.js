@@ -39,13 +39,6 @@ app.post('/create-checkout-session-test', async (request, reply) => {
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY
   });
   app.log.info('[CHECKOUT-TEST] TEST_SECRET:', process.env.TEST_SECRET); // DEBUG: Log TEST_SECRET
-// Simple route to test env keys and TEST_SECRET
-app.get('/env-test', async (request, reply) => {
-  return {
-    envKeys: Object.keys(process.env),
-    TEST_SECRET: process.env.TEST_SECRET
-  };
-});
   const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
   const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
     ? process.env.STRIPE_SECRET_KEY_LIVE
