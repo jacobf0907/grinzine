@@ -5,6 +5,15 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('./db');
 
+// DEBUG: Log env vars at plugin load
+console.log('[fastify-auth.js] ENV at module load:', {
+  GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
+  GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
+  JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
+  ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+  NODE_ENV: process.env.NODE_ENV
+});
+
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 const crypto = require('crypto');
 
@@ -30,6 +39,14 @@ function setTokenCookie(reply, userId) {
  * @param {*} opts
  */
 async function authPlugin(fastify, opts) {
+  // DEBUG: Log env vars at plugin registration
+  fastify.log.info('[fastify-auth.js] ENV at plugin registration:', {
+    GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
+    GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
+    JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
+    ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+    NODE_ENV: process.env.NODE_ENV
+  });
   const nodemailer = require('nodemailer');
 
   /**
@@ -37,6 +54,13 @@ async function authPlugin(fastify, opts) {
    * @route POST /auth/request-reset
    */
   fastify.post('/auth/request-reset', async (request, reply) => {
+    fastify.log.info('[fastify-auth.js] /auth/request-reset handler ENV:', {
+      GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
+      GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
+      JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
+      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+      NODE_ENV: process.env.NODE_ENV
+    });
     try {
       const { email } = request.body;
       const user = await prisma.user.findUnique({ where: { email } });
@@ -79,6 +103,13 @@ async function authPlugin(fastify, opts) {
    * @route POST /auth/reset-password
    */
   fastify.post('/auth/reset-password', async (request, reply) => {
+    fastify.log.info('[fastify-auth.js] /auth/reset-password handler ENV:', {
+      GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
+      GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
+      JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
+      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+      NODE_ENV: process.env.NODE_ENV
+    });
     try {
       const { token, password } = request.body;
       const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
@@ -120,6 +151,13 @@ async function authPlugin(fastify, opts) {
    * @route POST /auth/signup
    */
   fastify.post('/auth/signup', async (request, reply) => {
+    fastify.log.info('[fastify-auth.js] /auth/signup handler ENV:', {
+      GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
+      GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
+      JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
+      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+      NODE_ENV: process.env.NODE_ENV
+    });
     try {
       const { email, password } = request.body;
       const hashed = await bcrypt.hash(password, 10);
@@ -136,6 +174,13 @@ async function authPlugin(fastify, opts) {
    * @route POST /auth/login
    */
   fastify.post('/auth/login', async (request, reply) => {
+    fastify.log.info('[fastify-auth.js] /auth/login handler ENV:', {
+      GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
+      GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
+      JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
+      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+      NODE_ENV: process.env.NODE_ENV
+    });
     try {
       const { email, password } = request.body;
       const user = await prisma.user.findUnique({ where: { email } });
@@ -155,6 +200,13 @@ async function authPlugin(fastify, opts) {
    * @route GET /auth/my-library
    */
   fastify.get('/auth/my-library', { preHandler: fastify.requireAuth }, async (request, reply) => {
+    fastify.log.info('[fastify-auth.js] /auth/my-library handler ENV:', {
+      GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
+      GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
+      JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
+      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+      NODE_ENV: process.env.NODE_ENV
+    });
     try {
       const purchases = await prisma.purchase.findMany({
         where: { userId: request.userId },
@@ -173,6 +225,13 @@ async function authPlugin(fastify, opts) {
    * @route POST /auth/logout
    */
   fastify.post('/auth/logout', { preHandler: fastify.requireAuth }, async (request, reply) => {
+    fastify.log.info('[fastify-auth.js] /auth/logout handler ENV:', {
+      GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
+      GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
+      JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
+      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+      NODE_ENV: process.env.NODE_ENV
+    });
     try {
       reply.clearCookie('token', { path: '/' });
       reply.send({ message: 'Logged out' });

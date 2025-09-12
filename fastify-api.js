@@ -1,10 +1,21 @@
 // fastify-api.js
+
 const fp = require('fastify-plugin');
 const Stripe = require('stripe');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { ISSUES } = require('./issues');
 const PORT = process.env.PORT || 4242;
+
+// DEBUG: Log env vars at plugin load
+console.log('[fastify-api.js] ENV at module load:', {
+  STRIPE_MODE: process.env.STRIPE_MODE,
+  STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE ? '[set]' : '[not set]',
+  STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST ? '[set]' : '[not set]',
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? '[set]' : '[not set]',
+  ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+  NODE_ENV: process.env.NODE_ENV
+});
 
 const ISSUE_MAP = {};
 for (const issue of ISSUES) {
@@ -29,6 +40,15 @@ async function apiPlugin(fastify, opts) {
    * Stripe webhook endpoint
    * @route POST /webhook
    */
+  // DEBUG: Log env vars at plugin registration
+  fastify.log.info('[fastify-api.js] ENV at plugin registration:', {
+    STRIPE_MODE: process.env.STRIPE_MODE,
+    STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE ? '[set]' : '[not set]',
+    STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST ? '[set]' : '[not set]',
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? '[set]' : '[not set]',
+    ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+    NODE_ENV: process.env.NODE_ENV
+  });
   fastify.route({
     method: 'POST',
     url: '/webhook',
@@ -37,6 +57,14 @@ async function apiPlugin(fastify, opts) {
     // Only for this route, override the content type parser
     bodyLimit: 1048576, // 1MB
     handler: async (request, reply) => {
+      fastify.log.info('[fastify-api.js] /webhook handler ENV:', {
+        STRIPE_MODE: process.env.STRIPE_MODE,
+        STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE ? '[set]' : '[not set]',
+        STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST ? '[set]' : '[not set]',
+        STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? '[set]' : '[not set]',
+        ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+        NODE_ENV: process.env.NODE_ENV
+      });
       try {
         fastify.log.info('--- Stripe Webhook Received ---');
         // Always get env vars at request time
@@ -148,6 +176,14 @@ async function apiPlugin(fastify, opts) {
       }
     }
   }, async (request, reply) => {
+    fastify.log.info('[fastify-api.js] /create-checkout-session handler ENV:', {
+      STRIPE_MODE: process.env.STRIPE_MODE,
+      STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE ? '[set]' : '[not set]',
+      STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST ? '[set]' : '[not set]',
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? '[set]' : '[not set]',
+      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
+      NODE_ENV: process.env.NODE_ENV
+    });
     try {
       const { sessionId } = request.params;
       // Find purchase by stripeId and join Issue
