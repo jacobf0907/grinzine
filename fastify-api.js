@@ -1,4 +1,3 @@
-// Debug: log raw headers for /create-checkout-session
 const originalCreateCheckoutSession = fastify.post;
 fastify.post = function (path, opts, handler) {
   if (path === '/create-checkout-session') {
@@ -10,6 +9,7 @@ fastify.post = function (path, opts, handler) {
   }
   return originalCreateCheckoutSession.call(this, path, opts, handler);
 };
+// (Removed monkey-patch for fastify.post. Debug log is in the correct handler.)
 // fastify-api.js
 
 const fp = require('fastify-plugin');
