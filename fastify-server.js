@@ -1,5 +1,4 @@
-
-
+console.log('DEPLOY TEST: 2025-09-12 :: unique log for troubleshooting env issue');
 // Only load .env in development
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
