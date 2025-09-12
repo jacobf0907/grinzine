@@ -186,8 +186,16 @@ async function apiPlugin(fastify, opts) {
       }
     }
   }, async (request, reply) => {
+    // Dynamically read Stripe env vars and create Stripe instance
+    const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
+    const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
+      ? process.env.STRIPE_SECRET_KEY_LIVE
+      : process.env.STRIPE_SECRET_KEY_TEST;
+    const stripe = Stripe(STRIPE_SECRET_KEY);
     fastify.log.info('[CHECKOUT] Incoming request body:', request.body);
     fastify.log.info('[CHECKOUT] Authenticated userId:', request.userId);
+    fastify.log.info('[CHECKOUT] STRIPE_MODE:', STRIPE_MODE);
+    fastify.log.info('[CHECKOUT] STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
     try {
       const { priceId } = request.body;
       // Find the issue by either live or test priceId
@@ -236,8 +244,8 @@ async function apiPlugin(fastify, opts) {
       if (!err) {
         fastify.log.error('Checkout session error: err is undefined or null!');
       }
-      fastify.log.error('STRIPE_MODE:', STRIPE_MODE);
-      fastify.log.error('STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
+      fastify.log.error('[CHECKOUT] STRIPE_MODE:', STRIPE_MODE);
+      fastify.log.error('[CHECKOUT] STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
       fastify.log.error('[CHECKOUT] Error creating checkout session:', err);
       fastify.log.error('[CHECKOUT] Error as string:', String(err));
       fastify.log.error('[CHECKOUT] Error type:', typeof err);
