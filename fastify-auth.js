@@ -209,7 +209,8 @@ async function authPlugin(fastify, opts) {
    * @route GET /auth/my-library
    */
   fastify.get('/auth/my-library', { preHandler: fastify.requireAuth }, async (request, reply) => {
-    fastify.log.info('[fastify-auth.js] /auth/my-library handler ENV:', {
+  fastify.log.info('[DEBUG] request.raw.headers:', request.raw.headers);
+  fastify.log.info('[fastify-auth.js] /auth/my-library handler ENV:', {
       GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
       GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
       JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',

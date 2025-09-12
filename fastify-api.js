@@ -234,6 +234,8 @@ async function apiPlugin(fastify, opts) {
       }
     }
   }, async (request, reply) => {
+    // Debug: log raw headers
+    fastify.log.info('[DEBUG] request.raw.headers:', request.raw.headers);
     // Log all environment variables at request time
     fastify.log.info('[CHECKOUT] FULL ENV:', process.env);
     fastify.log.info('[CHECKOUT] STRIPE ENV VARS:', {
