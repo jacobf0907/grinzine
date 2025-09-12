@@ -186,6 +186,8 @@ async function apiPlugin(fastify, opts) {
       }
     }
   }, async (request, reply) => {
+    // Log all environment variables at request time
+    fastify.log.info('[CHECKOUT] process.env at request time:', process.env);
     // Dynamically read Stripe env vars and create Stripe instance
     const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
     const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
