@@ -240,6 +240,13 @@ async function apiPlugin(fastify, opts) {
     fastify.log.info('[CHECKOUT] Authenticated userId:', request.userId);
     fastify.log.info('[CHECKOUT] STRIPE_MODE:', STRIPE_MODE);
     fastify.log.info('[CHECKOUT] STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
+
+    // Add check for authenticated userId
+    if (!request.userId) {
+      fastify.log.error('[CHECKOUT] No authenticated userId found');
+      return reply.status(401).send({ error: 'Not authenticated' });
+    }
+
     try {
       const { priceId } = request.body;
       // Find the issue by either live or test priceId
