@@ -32,6 +32,7 @@ const app = Fastify({ logger: true, trustProxy: true });
 // Minimal /create-checkout-session route for env var testing (bypasses plugin)
 app.post('/create-checkout-session-test', async (request, reply) => {
   app.log.info('[CHECKOUT-TEST] FULL ENV:', process.env);
+  app.log.info('[CHECKOUT-TEST] ENV KEYS:', Object.keys(process.env)); // DEBUG: List all env keys
   app.log.info('[CHECKOUT-TEST] STRIPE ENV VARS:', {
     STRIPE_MODE: process.env.STRIPE_MODE,
     STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE,
