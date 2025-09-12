@@ -1,4 +1,3 @@
-
 // fastify-auth.js
 const fp = require('fastify-plugin');
 const bcrypt = require('bcrypt');
@@ -138,7 +137,8 @@ async function authPlugin(fastify, opts) {
   // Auth preHandler
   fastify.decorate('requireAuth', async function (request, reply) {
     const token = request.cookies.token;
-    fastify.log.info('[requireAuth] cookies:', request.cookies);
+    fastify.log.info('[requireAuth] request.raw.headers:', request.raw.headers);
+    fastify.log.info('[requireAuth] request.cookies:', request.cookies);
     fastify.log.info('[requireAuth] token:', token);
     if (!token) {
       fastify.log.error('[requireAuth] No token found in cookies');
