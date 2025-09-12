@@ -137,11 +137,19 @@ async function authPlugin(fastify, opts) {
   // Auth preHandler
   fastify.decorate('requireAuth', async function (request, reply) {
     const token = request.cookies.token;
-    if (!token) return reply.status(401).send({ error: 'Not authenticated' });
+    fastify.log.info('[requireAuth] cookies:', request.cookies);
+    fastify.log.info('[requireAuth] token:', token);
+    if (!token) {
+      fastify.log.error('[requireAuth] No token found in cookies');
+      return reply.status(401).send({ error: 'Not authenticated' });
+    }
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
+      fastify.log.info('[requireAuth] decoded JWT:', decoded);
       request.userId = decoded.userId;
+      fastify.log.info('[requireAuth] set request.userId:', request.userId);
     } catch (err) {
+      fastify.log.error('[requireAuth] Invalid token:', err);
       return reply.status(401).send({ error: 'Invalid token' });
     }
   });

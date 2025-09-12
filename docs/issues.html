@@ -238,7 +238,8 @@ resetLogoutTimer();
         const response = await csrfFetch(`${API_BASE_URL}/create-checkout-session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ priceId })
+          body: JSON.stringify({ priceId }),
+          credentials: "include"
         });
 
         const data = await response.json();
