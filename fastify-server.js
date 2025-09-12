@@ -106,7 +106,7 @@ app.get('/env-debug', async (request, reply) => {
 
 
 // Register cookie parser for auth (must be first, global and not encapsulated for all plugins)
-app.register(fastifyCookie);
+app.register(fastifyCookie, { global: true, encapsulate: false });
 
 // Register formbody parser for urlencoded forms
 app.register(fastifyFormbody);
