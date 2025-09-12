@@ -1,3 +1,5 @@
+
+
 // Only load .env in development
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -18,14 +20,75 @@ const fastifyCsrf = require('@fastify/csrf');
 const fastifyCookie = require('@fastify/cookie');
 const fastifyApi = require('./fastify-api');
 const fastifyAuth = require('./fastify-auth');
+const Stripe = require('stripe');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+const { ISSUES } = require('./issues');
 
 const app = Fastify({ logger: true, trustProxy: true });
+
+
+
+// Minimal /create-checkout-session route for env var testing (bypasses plugin)
+app.post('/create-checkout-session-test', async (request, reply) => {
+  app.log.info('[CHECKOUT-TEST] FULL ENV:', process.env);
+  app.log.info('[CHECKOUT-TEST] STRIPE ENV VARS:', {
+    STRIPE_MODE: process.env.STRIPE_MODE,
+    STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE,
+    STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY
+  });
+  const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
+  const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
+    ? process.env.STRIPE_SECRET_KEY_LIVE
+    : process.env.STRIPE_SECRET_KEY_TEST;
+  const stripe = Stripe(STRIPE_SECRET_KEY);
+  app.log.info('[CHECKOUT-TEST] STRIPE_MODE:', STRIPE_MODE);
+  app.log.info('[CHECKOUT-TEST] STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
+  try {
+    const { priceId, userId } = request.body || {};
+    const issue = ISSUES.find(i => i.priceIdLive === priceId || i.priceIdTest === priceId);
+    if (!issue) {
+      app.log.warn('[CHECKOUT-TEST] Invalid or unknown priceId:', priceId);
+      return reply.status(400).send({ error: 'Invalid or unknown priceId' });
+    }
+    const selectedPriceId = STRIPE_MODE === 'live' ? issue.priceIdLive : issue.priceIdTest;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      app.log.warn('[CHECKOUT-TEST] User not found for userId:', userId);
+      return reply.status(401).send({ error: 'User not found' });
+    }
+    app.log.info('[CHECKOUT-TEST] Creating Stripe session with:', {
+      email: user.email,
+      selectedPriceId
+    });
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      customer_email: user.email,
+      line_items: [
+        {
+          price: selectedPriceId,
+          quantity: 1,
+        },
+      ],
+      success_url: `https://www.grinzine.com/payment_success.html`,
+      cancel_url: `https://www.grinzine.com/payment_cancel.html`,
+    });
+    app.log.info('[CHECKOUT-TEST] Stripe session created:', session.id);
+    reply.send({ url: session.url });
+  } catch (err) {
+    app.log.error('[CHECKOUT-TEST] Error creating checkout session:', err);
+    reply.status(500).send({ error: 'Internal server error', details: err && err.message });
+  }
+});
+
+// (Removed duplicate block)
+
 
 // Debug route to return all environment variables
 app.get('/env-debug', async (request, reply) => {
   return process.env;
 });
-
 
 
 // Register formbody parser for urlencoded forms
