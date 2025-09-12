@@ -1,3 +1,7 @@
+// Debug route to return all environment variables
+app.get('/env-debug', async (request, reply) => {
+  return process.env;
+});
 
 // fastify-server.js
 // Only load .env in development
