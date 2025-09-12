@@ -1,5 +1,5 @@
 # Use latest Node.js LTS image
-FROM node:20
+FROM node:20-bullseye
 
 WORKDIR /app
 
@@ -15,4 +15,4 @@ ENV PORT=8080
 ENV NODE_ENV=production
 EXPOSE 8080
 
-CMD ["node", "fastify-server.js"]
+CMD ["node", "minimal-server.js"]

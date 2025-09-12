@@ -12,9 +12,13 @@ app.get('/env-debug', async (request, reply) => {
 
 // Minimal /create-checkout-session-test route for env var testing
 app.post('/create-checkout-session-test', async (request, reply) => {
-  app.log.info('[CHECKOUT-TEST] ENV KEYS:', Object.keys(process.env));
-  app.log.info('[CHECKOUT-TEST] TEST_SECRET:', process.env.TEST_SECRET);
-  return { envKeys: Object.keys(process.env), TEST_SECRET: process.env.TEST_SECRET };
+  const envKeys = Object.keys(process.env);
+  reply.send({
+    envKeys,
+    TEST_SECRET: process.env.TEST_SECRET,
+    STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST,
+    STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE,
+  });
 });
 
 const PORT = process.env.PORT || 8080;
