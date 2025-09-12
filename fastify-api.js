@@ -1,3 +1,15 @@
+// Debug: log raw headers for /create-checkout-session
+const originalCreateCheckoutSession = fastify.post;
+fastify.post = function (path, opts, handler) {
+  if (path === '/create-checkout-session') {
+    const wrappedHandler = async function (request, reply) {
+      fastify.log.info('[DEBUG] request.raw.headers:', request.raw.headers);
+      return handler(request, reply);
+    };
+    return originalCreateCheckoutSession.call(this, path, opts, wrappedHandler);
+  }
+  return originalCreateCheckoutSession.call(this, path, opts, handler);
+};
 // fastify-api.js
 
 const fp = require('fastify-plugin');

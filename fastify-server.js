@@ -106,11 +106,11 @@ app.get('/env-debug', async (request, reply) => {
 });
 
 
+// Register cookie parser for auth (must be first)
+app.register(fastifyCookie);
+
 // Register formbody parser for urlencoded forms
 app.register(fastifyFormbody);
-
-// Register cookie parser for auth
-app.register(fastifyCookie);
 
 // Security headers (Helmet equivalent)
 app.register(fastifyHelmet, {
@@ -147,7 +147,7 @@ app.register(fastifyCors, {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'X-CSRF-Token', 'cookie'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'X-CSRF-Token'],
 });
 
 // General rate limit: 100 requests per 15 minutes per IP
