@@ -233,9 +233,9 @@ resetLogoutTimer();
       btn.disabled = true;
       btn.textContent = 'Redirecting...';
 
-      // DEBUG: Temporarily use /create-checkout-session-test for backend debugging. Change back to /create-checkout-session after debugging.
+      // Use /create-checkout-session for production
       try {
-        const response = await csrfFetch(`${API_BASE_URL}/create-checkout-session-test`, {
+        const response = await csrfFetch(`${API_BASE_URL}/create-checkout-session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ priceId })
@@ -286,9 +286,9 @@ resetLogoutTimer();
       btn.disabled = true;
       btn.textContent = 'Redirecting...';
 
-      // DEBUG: Temporarily use /create-checkout-session-test for backend debugging. Change back to /create-checkout-session after debugging.
+      // Use /create-checkout-session for production
       try {
-        const res = await csrfFetch(`${API_BASE_URL}/create-checkout-session-test`, {
+        const res = await csrfFetch(`${API_BASE_URL}/create-checkout-session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ priceId })
