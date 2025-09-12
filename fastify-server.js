@@ -1,9 +1,3 @@
-// Debug route to return all environment variables
-app.get('/env-debug', async (request, reply) => {
-  return process.env;
-});
-
-// fastify-server.js
 // Only load .env in development
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -12,6 +6,7 @@ if (process.env.NODE_ENV !== 'production') {
 console.log('DEBUG: All environment variables at startup:', process.env);
 console.log('DEBUG: STRIPE_MODE:', process.env.STRIPE_MODE);
 console.log('DEBUG: STRIPE_SECRET_KEY_TEST:', process.env.STRIPE_SECRET_KEY_TEST ? '[set]' : '[not set]');
+
 const path = require('path');
 const Fastify = require('fastify');
 const fastifyHelmet = require('@fastify/helmet');
@@ -24,8 +19,13 @@ const fastifyCookie = require('@fastify/cookie');
 const fastifyApi = require('./fastify-api');
 const fastifyAuth = require('./fastify-auth');
 
-
 const app = Fastify({ logger: true, trustProxy: true });
+
+// Debug route to return all environment variables
+app.get('/env-debug', async (request, reply) => {
+  return process.env;
+});
+
 
 
 // Register formbody parser for urlencoded forms
