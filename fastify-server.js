@@ -238,12 +238,108 @@ app.register(fastifyStatic, {
 
 // Register API and auth plugins
 // app.register(fastifyApi); // TEMP: Disabled to avoid duplicate /webhook route
-// --- TEMP: Stripe webhook handler moved from plugin to main server for debugging ---
+// --- Stripe webhook handler moved from plugin to main server (with raw body parsing) ---
+const ISSUE_MAP = {};
+for (const issue of ISSUES) {
+  if (issue.priceIdLive) {
+    ISSUE_MAP[issue.priceIdLive] = {
+      name: issue.title,
+      pdfPath: issue.pdfPath
+    };
+  }
+  if (issue.priceIdTest) {
+    ISSUE_MAP[issue.priceIdTest] = {
+      name: issue.title,
+      pdfPath: issue.pdfPath
+    };
+  }
+}
+
+// Custom raw body parser for Stripe webhook
+app.addContentTypeParser('*', { parseAs: 'buffer' }, function (req, body, done) {
+  done(null, body);
+});
+
 app.post('/webhook', async (request, reply) => {
   app.log.info('--- Stripe Webhook Handler START (main server) ---');
-  reply.code(200).send({ ok: true }); // TEMP: always respond 200
-  return;
-  // ...original webhook logic can be restored here after test...
+  try {
+    const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
+    const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
+      ? process.env.STRIPE_SECRET_KEY_LIVE
+      : process.env.STRIPE_SECRET_KEY_TEST;
+    const STRIPE_WEBHOOK_SECRET = STRIPE_MODE === 'live'
+      ? process.env.STRIPE_WEBHOOK_SECRET_LIVE
+      : process.env.STRIPE_WEBHOOK_SECRET_TEST;
+    const stripe = Stripe(STRIPE_SECRET_KEY);
+    const sig = request.headers['stripe-signature'];
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+      app.log.error('Webhook signature verification failed:', err.message);
+      return reply.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      const email = session.customer_email;
+      const stripeId = session.id;
+      app.log.info('--- Stripe Webhook Event ---');
+      app.log.info('Email:', email);
+      app.log.info('StripeId:', stripeId);
+      try {
+        // Find or create user
+        let user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+          user = await prisma.user.create({ data: { email, password: '' } });
+          app.log.info('Created new user:', user.id);
+        } else {
+          app.log.info('Found user:', user.id);
+        }
+
+        const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+        for (const item of lineItems.data) {
+          const issueInfo = ISSUE_MAP[item.price.id];
+          app.log.info('PriceId:', item.price.id, 'IssueInfo:', issueInfo ? issueInfo.name : 'Unknown');
+          if (issueInfo) {
+            // Find the Issue in the database by title
+            const issue = await prisma.issue.findUnique({ where: { title: issueInfo.name } });
+            if (!issue) {
+              app.log.warn(`No matching Issue in DB for title: ${issueInfo.name}`);
+              continue;
+            }
+            // Prevent duplicate purchases by stripeId
+            const existing = await prisma.purchase.findUnique({ where: { stripeId } });
+            if (!existing) {
+              try {
+                await prisma.purchase.create({
+                  data: {
+                    userId: user.id,
+                    issueId: issue.id,
+                    stripeId: stripeId
+                  }
+                });
+                app.log.info(`Purchased: ${issue.title} for user ${email}`);
+              } catch (err) {
+                app.log.error('Error creating purchase:', err);
+              }
+            } else {
+              app.log.info(`Purchase already exists for stripeId: ${stripeId}`);
+            }
+          } else {
+            app.log.warn(`Unknown Price ID in webhook: ${item.price.id}`);
+          }
+        }
+      } catch (e) {
+        app.log.error('Error processing purchase:', e);
+      }
+    }
+
+    reply.code(200).send();
+  } catch (err) {
+    app.log.error('Webhook handler error:', err);
+    reply.status(500).send({ error: 'Internal server error' });
+  }
 });
 app.register(fastifyAuth);
 
