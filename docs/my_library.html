@@ -21,6 +21,46 @@
     max-width: 900px;
     margin: 30px auto;
   }
+  .pdf-viewer-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .side-btn {
+    height: 60px;
+    min-width: 60px;
+    font-size: 1.1em;
+    font-family: 'Londrina Solid', sans-serif;
+    margin: 0 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s;
+  }
+  .side-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  @media (max-width: 700px) {
+    .pdf-viewer-flex {
+      flex-direction: column;
+      gap: 10px;
+    }
+    .side-btn {
+      width: 100%;
+      min-width: 0;
+      border-radius: 8px;
+      margin: 5px 0;
+      height: 40px;
+      font-size: 1em;
+    }
+  }
   </style>
 </head>
 
@@ -44,11 +84,13 @@
   <div id="library" style="text-align:center;"></div>
   <div class="flipbook-container" id="flipbook-container" style="display:none;">
     <h3 id="pdf-title"></h3>
-    <canvas id="pdf-canvas" style="width:100%;max-width:900px;"></canvas>
+    <div class="pdf-viewer-flex">
+      <button id="prev-page" class="default-btn side-btn">Previous</button>
+      <canvas id="pdf-canvas" style="width:100%;max-width:900px;"></canvas>
+      <button id="next-page" class="default-btn side-btn">Next</button>
+    </div>
     <div id="pdf-controls" style="margin:20px 0; display:flex; justify-content:center; gap:20px;">
-  <button id="prev-page" class="default-btn">Previous</button>
-  <span id="page-info"></span>
-  <button id="next-page" class="default-btn">Next</button>
+      <span id="page-info"></span>
     </div>
   </div>
   <script>
