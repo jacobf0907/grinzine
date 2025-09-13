@@ -151,7 +151,13 @@
     }
 
     function updateControls() {
-      document.getElementById('page-info').textContent = `Page ${currentPageNum} of ${totalPages}`;
+      const pageInfo = document.getElementById('page-info');
+      pageInfo.textContent = `Page ${currentPageNum} of ${totalPages}`;
+      pageInfo.style.fontFamily = 'Pathway Gothic One, sans-serif';
+      pageInfo.style.fontSize = '1.2em';
+      pageInfo.style.margin = '0 10px';
+      pageInfo.style.letterSpacing = '0.5px';
+      pageInfo.style.fontWeight = 'normal';
       document.getElementById('prev-page').disabled = currentPageNum <= 1;
       document.getElementById('next-page').disabled = currentPageNum >= totalPages;
     }
