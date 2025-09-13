@@ -256,12 +256,14 @@ for (const issue of ISSUES) {
 }
 
 
-// Set content type parser for Stripe webhook only
-app.addContentTypeParser('application/json', { parseAs: 'buffer' }, function (req, body, done) {
-  done(null, body);
-});
-
-app.post('/webhook', async (request, reply) => {
+// Stripe webhook route with preParsing hook for raw body
+app.post('/webhook', {
+  preParsing: (request, reply, payload, done) => {
+    let data = [];
+    payload.on('data', chunk => data.push(chunk));
+    payload.on('end', () => done(null, Buffer.concat(data)));
+  }
+}, async (request, reply) => {
   app.log.info('--- Stripe Webhook Handler START (main server) ---');
   try {
     const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
@@ -340,17 +342,6 @@ app.post('/webhook', async (request, reply) => {
   } catch (err) {
     app.log.error('Webhook handler error:', err);
     reply.status(500).send({ error: 'Internal server error' });
-  }
-});
-
-// Restore default JSON parser for all other routes
-app.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
-  try {
-    const json = JSON.parse(body);
-    done(null, json);
-  } catch (err) {
-    err.statusCode = 400;
-    done(err, undefined);
   }
 });
 app.register(fastifyAuth);
