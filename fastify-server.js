@@ -1,3 +1,7 @@
+// Register a global content type parser for application/json as buffer (for Stripe)
+app.addContentTypeParser('application/json', { parseAs: 'buffer' }, function (req, body, done) {
+  done(null, body);
+});
 console.log('DEPLOY TEST: 2025-09-12 :: unique log for troubleshooting env issue');
 // Only load .env in development
 if (process.env.NODE_ENV !== 'production') {
@@ -61,14 +65,14 @@ app.get('/protected-test-main', { preHandler: requireAuthMain }, async (request,
 // Minimal /create-checkout-session route for env var testing (bypasses plugin)
 app.post('/create-checkout-session-test', async (request, reply) => {
   app.log.info('[CHECKOUT-TEST] FULL ENV:', process.env);
-  app.log.info('[CHECKOUT-TEST] ENV KEYS:', Object.keys(process.env)); // DEBUG: List all env keys
+  app.log.info('[CHECKOUT-TEST] ENV KEYS:', Object.keys(process.env));
   app.log.info('[CHECKOUT-TEST] STRIPE ENV VARS:', {
     STRIPE_MODE: process.env.STRIPE_MODE,
     STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE,
     STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY
   });
-  app.log.info('[CHECKOUT-TEST] TEST_SECRET:', process.env.TEST_SECRET); // DEBUG: Log TEST_SECRET
+  app.log.info('[CHECKOUT-TEST] TEST_SECRET:', process.env.TEST_SECRET);
   const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
   const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
     ? process.env.STRIPE_SECRET_KEY_LIVE
@@ -77,7 +81,13 @@ app.post('/create-checkout-session-test', async (request, reply) => {
   app.log.info('[CHECKOUT-TEST] STRIPE_MODE:', STRIPE_MODE);
   app.log.info('[CHECKOUT-TEST] STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
   try {
-    const { priceId, userId } = request.body || {};
+    // Manually parse JSON body
+    let priceId, userId;
+    if (request.body && Buffer.isBuffer(request.body)) {
+      ({ priceId, userId } = JSON.parse(request.body.toString()));
+    } else {
+      ({ priceId, userId } = request.body || {});
+    }
     if (!userId) {
       app.log.error('[CHECKOUT-TEST] Missing userId in request body');
       return reply.status(400).send({ error: 'Missing userId in request body' });
@@ -382,7 +392,13 @@ function registerProtectedRoutes(app) {
     }
 
     try {
-      const { priceId } = request.body;
+      // Manually parse JSON body
+      let priceId;
+      if (request.body && Buffer.isBuffer(request.body)) {
+        ({ priceId } = JSON.parse(request.body.toString()));
+      } else {
+        ({ priceId } = request.body || {});
+      }
       const issue = ISSUES.find(i => i.priceIdLive === priceId || i.priceIdTest === priceId);
       if (!issue) {
         app.log.warn('[CHECKOUT] Invalid or unknown priceId:', priceId);
