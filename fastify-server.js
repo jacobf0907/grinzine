@@ -1,5 +1,3 @@
-
-
 console.log('DEPLOY TEST: 2025-09-12 :: unique log for troubleshooting env issue');
 // Only load .env in development
 if (process.env.NODE_ENV !== 'production') {
@@ -58,6 +56,7 @@ app.get('/protected-test-main', { preHandler: requireAuthMain }, async (request,
   app.log.info('[protected-test-main] userId:', request.userId);
   reply.send({ message: 'Authenticated in main context!', userId: request.userId });
 });
+
 
 // Minimal /create-checkout-session route for env var testing (bypasses plugin)
 app.post('/create-checkout-session-test', async (request, reply) => {
@@ -123,9 +122,6 @@ app.post('/create-checkout-session-test', async (request, reply) => {
     reply.status(500).send({ error: 'Internal server error', details: err && err.message });
   }
 });
-
-// (Removed duplicate block)
-
 
 // Debug route to return all environment variables
 app.get('/env-debug', async (request, reply) => {
@@ -239,14 +235,129 @@ app.register(fastifyStatic, {
   prefix: '/',
 });
 
+
 // Register API and auth plugins
 app.register(fastifyApi);
 app.register(fastifyAuth);
+
+// Register protected routes after app is defined
+registerProtectedRoutes(app);
 
 // Health check route
 app.get('/health', async (request, reply) => {
   return { status: 'ok' };
 });
+
+
+// POST /create-checkout-session (protected)
+function registerProtectedRoutes(app) {
+  app.post('/create-checkout-session', { preHandler: requireAuthMain }, async (request, reply) => {
+    app.log.info('[DEBUG] request.raw.headers:', request.raw.headers);
+    app.log.info('[CHECKOUT] FULL ENV:', process.env);
+    app.log.info('[CHECKOUT] STRIPE ENV VARS:', {
+      STRIPE_MODE: process.env.STRIPE_MODE,
+      STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE,
+      STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST,
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY
+    });
+    const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
+    const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
+      ? process.env.STRIPE_SECRET_KEY_LIVE
+      : process.env.STRIPE_SECRET_KEY_TEST;
+    const stripe = Stripe(STRIPE_SECRET_KEY);
+    app.log.info('[CHECKOUT] Incoming request body:', request.body);
+    app.log.info('[CHECKOUT] Authenticated userId:', request.userId);
+    app.log.info('[CHECKOUT] STRIPE_MODE:', STRIPE_MODE);
+    app.log.info('[CHECKOUT] STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
+
+    if (!request.userId) {
+      app.log.error('[CHECKOUT] No authenticated userId found');
+      return reply.status(401).send({ error: 'Not authenticated' });
+    }
+
+    try {
+      const { priceId } = request.body;
+      const issue = ISSUES.find(i => i.priceIdLive === priceId || i.priceIdTest === priceId);
+      if (!issue) {
+        app.log.warn('[CHECKOUT] Invalid or unknown priceId:', priceId);
+        return reply.status(400).send({ error: 'Invalid or unknown priceId' });
+      }
+      const selectedPriceId = STRIPE_MODE === 'live' ? issue.priceIdLive : issue.priceIdTest;
+      const isLocal = request.headers.origin && request.headers.origin.includes('localhost');
+      const baseUrl = isLocal
+        ? `http://localhost:${process.env.PORT || 4242}`
+        : process.env.ALLOWED_ORIGIN;
+      const user = await prisma.user.findUnique({ where: { id: request.userId } });
+      if (!user) {
+        app.log.warn('[CHECKOUT] User not found for userId:', request.userId);
+        return reply.status(401).send({ error: 'User not found' });
+      }
+      app.log.info('[CHECKOUT] Creating Stripe session with:', {
+        email: user.email,
+        selectedPriceId,
+        baseUrl
+      });
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        customer_email: user.email,
+        line_items: [
+          {
+            price: selectedPriceId,
+            quantity: 1,
+          },
+        ],
+        success_url: `${baseUrl}/payment_success.html`,
+        cancel_url: `${baseUrl}/payment_cancel.html`,
+      });
+      app.log.info('[CHECKOUT] Stripe session created:', session.id);
+      reply.send({ url: session.url });
+    } catch (err) {
+      if (!err) {
+        app.log.error('Checkout session error: err is undefined or null!');
+      }
+      app.log.error('[CHECKOUT] STRIPE_MODE:', STRIPE_MODE);
+      app.log.error('[CHECKOUT] STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
+      app.log.error('[CHECKOUT] Error creating checkout session:', err);
+      app.log.error('[CHECKOUT] Error as string:', String(err));
+      app.log.error('[CHECKOUT] Error type:', typeof err);
+      if (err && err.stack) app.log.error('[CHECKOUT] Stack trace:', err.stack);
+      if (err && typeof err === 'object') app.log.error('[CHECKOUT] Error object:', JSON.stringify(err, null, 2));
+      try {
+        const util = require('util');
+        app.log.error('[CHECKOUT] Error (util.inspect):', util.inspect(err, { depth: 5 }));
+      } catch (e) {}
+      reply.status(500).send({ error: 'Internal server error', details: err && err.message });
+    }
+  });
+
+  // GET /auth/my-library (protected)
+  app.get('/auth/my-library', { preHandler: requireAuthMain }, async (request, reply) => {
+    app.log.info('[DEBUG] request.raw.headers:', request.raw.headers);
+    try {
+      const purchases = await prisma.purchase.findMany({
+        where: { userId: request.userId },
+        include: { issue: true }
+      });
+      const user = await prisma.user.findUnique({ where: { id: request.userId } });
+      reply.send({ purchases, email: user ? user.email : null });
+    } catch (err) {
+      app.log.error(err);
+      reply.status(500).send({ error: 'Internal server error' });
+    }
+  });
+
+  // POST /auth/logout (protected)
+  app.post('/auth/logout', { preHandler: requireAuthMain }, async (request, reply) => {
+    try {
+      reply.clearCookie('token', { path: '/' });
+      reply.send({ message: 'Logged out' });
+    } catch (err) {
+      app.log.error(err);
+      reply.status(500).send({ error: 'Internal server error' });
+    }
+  });
+}
+// --- END: Protected routes moved from plugins to main server 
 
 // Error handler for CORS errors and generic errors
 app.setErrorHandler(function (error, request, reply) {
