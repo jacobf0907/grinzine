@@ -205,52 +205,7 @@ async function authPlugin(fastify, opts) {
     }
   });
 
-  /**
-   * My Library (protected)
-   * @route GET /auth/my-library
-   */
-  fastify.get('/auth/my-library', { preHandler: fastify.requireAuth }, async (request, reply) => {
-  fastify.log.info('[DEBUG] request.raw.headers:', request.raw.headers);
-  fastify.log.info('[fastify-auth.js] /auth/my-library handler ENV:', {
-      GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
-      GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
-      JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
-      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
-      NODE_ENV: process.env.NODE_ENV
-    });
-    try {
-      const purchases = await prisma.purchase.findMany({
-        where: { userId: request.userId },
-        include: { issue: true }
-      });
-      const user = await prisma.user.findUnique({ where: { id: request.userId } });
-      reply.send({ purchases, email: user ? user.email : null });
-    } catch (err) {
-      fastify.log.error(err);
-      reply.status(500).send({ error: 'Internal server error' });
-    }
-  });
 
-  /**
-   * Logout
-   * @route POST /auth/logout
-   */
-  fastify.post('/auth/logout', { preHandler: fastify.requireAuth }, async (request, reply) => {
-    fastify.log.info('[fastify-auth.js] /auth/logout handler ENV:', {
-      GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
-      GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
-      JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
-      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
-      NODE_ENV: process.env.NODE_ENV
-    });
-    try {
-      reply.clearCookie('token', { path: '/' });
-      reply.send({ message: 'Logged out' });
-    } catch (err) {
-      fastify.log.error(err);
-      reply.status(500).send({ error: 'Internal server error' });
-    }
-  });
 }
 
 module.exports = fp(authPlugin, { encapsulate: false });
