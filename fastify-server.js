@@ -237,7 +237,14 @@ app.register(fastifyStatic, {
 
 
 // Register API and auth plugins
-app.register(fastifyApi);
+// app.register(fastifyApi); // TEMP: Disabled to avoid duplicate /webhook route
+// --- TEMP: Stripe webhook handler moved from plugin to main server for debugging ---
+app.post('/webhook', async (request, reply) => {
+  app.log.info('--- Stripe Webhook Handler START (main server) ---');
+  reply.code(200).send({ ok: true }); // TEMP: always respond 200
+  return;
+  // ...original webhook logic can be restored here after test...
+});
 app.register(fastifyAuth);
 
 // Register protected routes after app is defined
