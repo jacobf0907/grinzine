@@ -1,8 +1,3 @@
-// Register a global content type parser for application/json as buffer (for Stripe)
-app.addContentTypeParser('application/json', { parseAs: 'buffer' }, function (req, body, done) {
-  done(null, body);
-});
-console.log('DEPLOY TEST: 2025-09-12 :: unique log for troubleshooting env issue');
 // Only load .env in development
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -29,6 +24,11 @@ const prisma = new PrismaClient();
 const { ISSUES } = require('./issues');
 
 const app = Fastify({ logger: true, trustProxy: true });
+
+// Register a global content type parser for application/json as buffer (for Stripe)
+app.addContentTypeParser('application/json', { parseAs: 'buffer' }, function (req, body, done) {
+  done(null, body);
+});
 
 // --- TEMPORARY: Protected test route in main context to debug plugin encapsulation ---
 const jwt = require('jsonwebtoken');
@@ -65,14 +65,14 @@ app.get('/protected-test-main', { preHandler: requireAuthMain }, async (request,
 // Minimal /create-checkout-session route for env var testing (bypasses plugin)
 app.post('/create-checkout-session-test', async (request, reply) => {
   app.log.info('[CHECKOUT-TEST] FULL ENV:', process.env);
-  app.log.info('[CHECKOUT-TEST] ENV KEYS:', Object.keys(process.env));
+  app.log.info('[CHECKOUT-TEST] ENV KEYS:', Object.keys(process.env)); // DEBUG: List all env keys
   app.log.info('[CHECKOUT-TEST] STRIPE ENV VARS:', {
     STRIPE_MODE: process.env.STRIPE_MODE,
     STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE,
     STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY
   });
-  app.log.info('[CHECKOUT-TEST] TEST_SECRET:', process.env.TEST_SECRET);
+  app.log.info('[CHECKOUT-TEST] TEST_SECRET:', process.env.TEST_SECRET); // DEBUG: Log TEST_SECRET
   const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
   const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
     ? process.env.STRIPE_SECRET_KEY_LIVE
