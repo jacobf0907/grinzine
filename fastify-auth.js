@@ -63,7 +63,12 @@ async function authPlugin(fastify, opts) {
       NODE_ENV: process.env.NODE_ENV
     });
     try {
-      const { email } = request.body;
+      let email;
+      if (request.body && Buffer.isBuffer(request.body)) {
+        ({ email } = JSON.parse(request.body.toString()));
+      } else {
+        ({ email } = request.body || {});
+      }
       const user = await prisma.user.findUnique({ where: { email } });
       // Always respond the same to prevent user enumeration
       if (!user) {
@@ -112,7 +117,12 @@ async function authPlugin(fastify, opts) {
       NODE_ENV: process.env.NODE_ENV
     });
     try {
-      const { token, password } = request.body;
+      let token, password;
+      if (request.body && Buffer.isBuffer(request.body)) {
+        ({ token, password } = JSON.parse(request.body.toString()));
+      } else {
+        ({ token, password } = request.body || {});
+      }
       const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
       const user = await prisma.user.findFirst({
         where: {
@@ -169,7 +179,12 @@ async function authPlugin(fastify, opts) {
       NODE_ENV: process.env.NODE_ENV
     });
     try {
-      const { email, password } = request.body;
+      let email, password;
+      if (request.body && Buffer.isBuffer(request.body)) {
+        ({ email, password } = JSON.parse(request.body.toString()));
+      } else {
+        ({ email, password } = request.body || {});
+      }
       const hashed = await bcrypt.hash(password, 10);
       const user = await prisma.user.create({ data: { email, password: hashed } });
       reply.send({ message: 'User created', userId: user.id });
@@ -192,7 +207,12 @@ async function authPlugin(fastify, opts) {
       NODE_ENV: process.env.NODE_ENV
     });
     try {
-      const { email, password } = request.body;
+      let email, password;
+      if (request.body && Buffer.isBuffer(request.body)) {
+        ({ email, password } = JSON.parse(request.body.toString()));
+      } else {
+        ({ email, password } = request.body || {});
+      }
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user) return reply.status(401).send({ error: 'Invalid email or password' });
       const valid = await bcrypt.compare(password, user.password);
