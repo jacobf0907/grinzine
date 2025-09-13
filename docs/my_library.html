@@ -94,7 +94,7 @@
       const libraryDiv = document.getElementById("library");
 
       if (!data.purchases || data.purchases.length === 0) {
-  libraryDiv.innerHTML = "<p class='no-purchases-text'>No purchases yet? Buy one <a href='issues.html' style='color:#e63946;text-decoration:underline;'>here</a></p>";
+  libraryDiv.innerHTML = "<h3 style='text-align:center; margin-bottom:20px; font-family:Pathway Gothic One,sans-serif;'>No purchases yet? Buy one <a href='issues.html' style='color:#e63946;text-decoration:underline;'>here</a></h3>";
   return;
       }
 
@@ -172,7 +172,7 @@
     document.addEventListener('DOMContentLoaded', loadLibrary);
   </script>
 </body>
-  <footer>
+
   <script>
     // Show login/signup or logged-in message with email and dropdown for logout
     async function updateNavAuth() {
@@ -237,7 +237,8 @@
     });
     resetLogoutTimer();
   </script>
-    <p>© 2025 GRIN • For the minds of the disturbed</p>
-  </footer>
+    <footer style="margin-top:auto;">
+        <p>© 2025 GRIN • For the minds of the disturbed</p>
+    </footer>
 </body>
 </html>
