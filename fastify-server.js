@@ -266,14 +266,8 @@ for (const issue of ISSUES) {
 }
 
 
-// Stripe webhook route with preParsing hook for raw body
-app.post('/webhook', {
-  preParsing: (request, reply, payload, done) => {
-    let data = [];
-    payload.on('data', chunk => data.push(chunk));
-    payload.on('end', () => done(null, Buffer.concat(data)));
-  }
-}, async (request, reply) => {
+// Stripe webhook route using global buffer parser
+app.post('/webhook', async (request, reply) => {
   app.log.info('--- Stripe Webhook Handler START (main server) ---');
   try {
     const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
