@@ -142,7 +142,73 @@
     </section>
   </main>
 
+  <script>
+// Show login/signup or logged-in message with email and dropdown for logout
+async function updateNavAuth() {
+  const API_BASE_URL = window.location.hostname === "localhost"
+    ? "http://localhost:4242"
+  : "https://api.grinzine.com";
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/my-library`, { credentials: "include" });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.email) {
+        document.getElementById("nav-auth").innerHTML = `
+          <div style="display:inline-block;position:relative;">
+            <span id="user-email" style="cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logged in as ${data.email} ▼</span>
+            <div id="logout-dropdown" style="display:none;position:absolute;right:0;background:#fff;color:#333;border:1px solid #ccc;z-index:1000;min-width:120px;font-family:'Londrina Solid',sans-serif;">
+              <button id="logout-btn" style="width:100%;padding:8px;border:none;background:none;cursor:pointer;font-family:'Londrina Solid',sans-serif;">Logout</button>
+            </div>
+          </div>
+        `;
+        document.getElementById("user-email").onclick = function(e) {
+          e.stopPropagation();
+          const dd = document.getElementById("logout-dropdown");
+          dd.style.display = dd.style.display === "block" ? "none" : "block";
+        };
+        document.getElementById("logout-btn").onclick = async function(e) {
+          e.stopPropagation();
+          await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
+          window.location.href = "login.html";
+        };
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function(e) {
+          const dd = document.getElementById("logout-dropdown");
+          if (dd && dd.style.display === "block") {
+            if (!e.target.closest("#logout-dropdown") && !e.target.closest("#user-email")) {
+              dd.style.display = "none";
+            }
+          }
+        });
+      } else {
+        document.getElementById("nav-auth").textContent = `Logged in`;
+      }
+    } else {
+      throw new Error();
+    }
+  } catch {
+  document.getElementById("nav-auth").innerHTML = `<button class='default-btn' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  }
+}
+updateNavAuth();
 
+// Auto-logout after inactivity (30 minutes)
+let logoutTimer;
+function resetLogoutTimer() {
+  clearTimeout(logoutTimer);
+  logoutTimer = setTimeout(async () => {
+    const API_BASE_URL = window.location.hostname === "localhost"
+      ? "http://localhost:4242"
+      : "https://api.grinzine.com";
+    await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
+    window.location.href = "login.html";
+  }, 30 * 60 * 1000); // 30 minutes
+}
+["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(evt => {
+  window.addEventListener(evt, resetLogoutTimer);
+});
+resetLogoutTimer();
+  </script>
 
   <script>
   // Set API base URL depending on environment

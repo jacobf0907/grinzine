@@ -1,3 +1,4 @@
+const fs = require('fs');
 // Only load .env in development
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -23,7 +24,18 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { ISSUES } = require('./issues');
 
+
 const app = Fastify({ logger: true, trustProxy: true });
+
+// Serve robots.txt from root (must be after app is created)
+app.get('/robots.txt', async (request, reply) => {
+  const robotsPath = path.join(__dirname, 'robots.txt');
+  if (fs.existsSync(robotsPath)) {
+    reply.type('text/plain').send(fs.readFileSync(robotsPath));
+  } else {
+    reply.code(404).send('Not found');
+  }
+});
 
 // Register a global content type parser for application/json as buffer (for Stripe)
 app.addContentTypeParser('application/json', { parseAs: 'buffer' }, function (req, body, done) {
