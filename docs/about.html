@@ -92,22 +92,20 @@
                 </div>
               </div>
             `;
-            document.getElementById("user-email").onclick = function(e) {
-              e.stopPropagation();
+            document.getElementById("user-email").onclick = function() {
               const dd = document.getElementById("logout-dropdown");
               dd.style.display = dd.style.display === "block" ? "none" : "block";
             };
-            document.getElementById("logout-btn").onclick = async function(e) {
-              e.stopPropagation();
+            document.getElementById("logout-btn").onclick = async function() {
               await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
               window.location.href = "login.html";
             };
             document.addEventListener("click", function(e) {
-              const dd = document.getElementById("logout-dropdown");
-              if (dd && dd.style.display === "block") {
-                if (!e.target.closest("#logout-dropdown") && !e.target.closest("#user-email")) {
-                  dd.style.display = "none";
-                }
+              const navAuth = document.getElementById("nav-auth");
+              const dropdown = document.getElementById("logout-dropdown");
+              if (!dropdown || !navAuth) return;
+              if (!e.target.closest("#logout-dropdown") && !e.target.closest("#user-email")) {
+                dropdown.style.display = "none";
               }
             });
           } else {
