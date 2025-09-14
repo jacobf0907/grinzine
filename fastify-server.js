@@ -465,7 +465,13 @@ function registerProtectedRoutes(app) {
   // POST /auth/logout (protected)
   app.post('/auth/logout', { preHandler: requireAuthMain }, async (request, reply) => {
     try {
-      reply.clearCookie('token', { path: '/' });
+      reply.clearCookie('token', {
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true,
+        path: '/',
+        domain: process.env.NODE_ENV === 'production' ? '.grinzine.com' : undefined
+      });
       reply.send({ message: 'Logged out' });
     } catch (err) {
       app.log.error(err);
