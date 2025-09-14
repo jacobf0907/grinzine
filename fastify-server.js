@@ -3,10 +3,23 @@ const fs = require('fs');
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
-// Debug logs
-console.log('DEBUG: All environment variables at startup:', process.env);
-console.log('DEBUG: STRIPE_MODE:', process.env.STRIPE_MODE);
-console.log('DEBUG: STRIPE_SECRET_KEY_TEST:', process.env.STRIPE_SECRET_KEY_TEST ? '[set]' : '[not set]');
+
+// Verify required environment variables are set (but do not log their values)
+const REQUIRED_ENV_VARS = [
+  'STRIPE_MODE',
+  'STRIPE_SECRET_KEY_LIVE',
+  'STRIPE_SECRET_KEY_TEST',
+  'STRIPE_WEBHOOK_SECRET_LIVE',
+  'STRIPE_WEBHOOK_SECRET_TEST',
+  'JWT_SECRET',
+  // Add any other required env vars here
+];
+const missingVars = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
+if (missingVars.length > 0) {
+  console.warn('WARNING: Missing required environment variables:', missingVars.join(', '));
+} else {
+  console.log('All required environment variables are set.');
+}
 
 const path = require('path');
 const Fastify = require('fastify');
@@ -72,88 +85,6 @@ app.get('/protected-test-main', { preHandler: requireAuthMain }, async (request,
   app.log.info('[protected-test-main] userId:', request.userId);
   reply.send({ message: 'Authenticated in main context!', userId: request.userId });
 });
-
-
-// Minimal /create-checkout-session route for env var testing (bypasses plugin)
-app.post('/create-checkout-session-test', async (request, reply) => {
-  app.log.info('[CHECKOUT-TEST] FULL ENV:', process.env);
-  app.log.info('[CHECKOUT-TEST] ENV KEYS:', Object.keys(process.env)); // DEBUG: List all env keys
-  app.log.info('[CHECKOUT-TEST] STRIPE ENV VARS:', {
-    STRIPE_MODE: process.env.STRIPE_MODE,
-    STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE,
-    STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST,
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY
-  });
-  app.log.info('[CHECKOUT-TEST] TEST_SECRET:', process.env.TEST_SECRET); // DEBUG: Log TEST_SECRET
-  const STRIPE_MODE = process.env.STRIPE_MODE || 'live';
-  const STRIPE_SECRET_KEY = STRIPE_MODE === 'live'
-    ? process.env.STRIPE_SECRET_KEY_LIVE
-    : process.env.STRIPE_SECRET_KEY_TEST;
-  const stripe = Stripe(STRIPE_SECRET_KEY);
-  app.log.info('[CHECKOUT-TEST] STRIPE_MODE:', STRIPE_MODE);
-  app.log.info('[CHECKOUT-TEST] STRIPE_SECRET_KEY:', STRIPE_SECRET_KEY ? '[set]' : '[not set]');
-  try {
-    // Manually parse JSON body
-    let priceId, userId;
-    if (request.body && Buffer.isBuffer(request.body)) {
-      ({ priceId, userId } = JSON.parse(request.body.toString()));
-    } else {
-      ({ priceId, userId } = request.body || {});
-    }
-    if (!userId) {
-      app.log.error('[CHECKOUT-TEST] Missing userId in request body');
-      return reply.status(400).send({ error: 'Missing userId in request body' });
-    }
-    const issue = ISSUES.find(i => i.priceIdLive === priceId || i.priceIdTest === priceId);
-    if (!issue) {
-      app.log.warn('[CHECKOUT-TEST] Invalid or unknown priceId:', priceId);
-      return reply.status(400).send({ error: 'Invalid or unknown priceId' });
-    }
-    const selectedPriceId = STRIPE_MODE === 'live' ? issue.priceIdLive : issue.priceIdTest;
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      app.log.warn('[CHECKOUT-TEST] User not found for userId:', userId);
-      return reply.status(401).send({ error: 'User not found' });
-    }
-    app.log.info('[CHECKOUT-TEST] Creating Stripe session with:', {
-      email: user.email,
-      selectedPriceId
-    });
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      customer_email: user.email,
-      line_items: [
-        {
-          price: selectedPriceId,
-          quantity: 1,
-        },
-      ],
-      success_url: `https://www.grinzine.com/payment_success.html`,
-      cancel_url: `https://www.grinzine.com/payment_cancel.html`,
-    });
-    app.log.info('[CHECKOUT-TEST] Stripe session created:', session.id);
-    reply.send({ url: session.url });
-  } catch (err) {
-    app.log.error('[CHECKOUT-TEST] Error creating checkout session: ' + (err && err.message ? err.message : String(err)));
-    try {
-      app.log.error('[CHECKOUT-TEST] Error object: ' + JSON.stringify(err, Object.getOwnPropertyNames(err)));
-    } catch (jsonErr) {
-      app.log.error('[CHECKOUT-TEST] Error object could not be stringified');
-    }
-    app.log.error('[CHECKOUT-TEST] Error stack: ' + (err && err.stack ? err.stack : 'No stack'));
-    reply.status(500).send({ error: 'Internal server error', details: err && err.message });
-  }
-});
-
-// Debug route to return all environment variables
-app.get('/env-debug', async (request, reply) => {
-    Object.keys(process.env).forEach(key => {
-        app.log.info(`[ENV-DEBUG] ${key}: ${process.env[key]}`);
-    });
-    process.env.TEST_SECRET;
-    return process.env;
-});
-
 
 // Register cookie parser for auth (must be first, global and not encapsulated for all plugins)
 app.register(fastifyCookie, { global: true, encapsulate: false });
