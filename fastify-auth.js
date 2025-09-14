@@ -90,7 +90,8 @@ async function authPlugin(fastify, opts) {
           pass: process.env.GMAIL_PASS
         }
       });
-      const resetUrl = `${process.env.ALLOWED_ORIGIN || 'https://grinzine.fly.dev'}/reset-password.html?token=${token}`;
+  // Always use the public frontend for password reset links
+  const resetUrl = `https://www.grinzine.com/reset-password.html?token=${token}`;
       await transporter.sendMail({
         from: process.env.GMAIL_USER,
         to: email,

@@ -251,11 +251,7 @@ app.register(fastifyStatic, {
   }
 });
 
-// Serve static files from ./docs (like Express)
-app.register(fastifyStatic, {
-  root: path.join(__dirname, 'docs'),
-  prefix: '/',
-});
+
 
 
 // Register API and auth plugins
