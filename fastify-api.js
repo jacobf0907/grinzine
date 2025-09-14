@@ -24,7 +24,7 @@ for (const issue of ISSUES) {
   }
 }
 
-console.log('DEBUG: process.env at module load:', process.env);
+
 
 async function apiPlugin(fastify, opts) {
 
