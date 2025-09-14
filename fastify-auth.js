@@ -4,15 +4,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('./db');
 
-// DEBUG: Log env vars at plugin load
-console.log('[fastify-auth.js] ENV at module load:', {
-  GMAIL_USER: process.env.GMAIL_USER ? '[set]' : '[not set]',
-  GMAIL_PASS: process.env.GMAIL_PASS ? '[set]' : '[not set]',
-  JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[not set]',
-  ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
-  NODE_ENV: process.env.NODE_ENV
-});
-
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 const crypto = require('crypto');
 

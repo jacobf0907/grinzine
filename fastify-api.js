@@ -8,16 +8,6 @@ const prisma = new PrismaClient();
 const { ISSUES } = require('./issues');
 const PORT = process.env.PORT || 4242;
 
-// DEBUG: Log env vars at plugin load (stringified for log visibility)
-console.log('[fastify-api.js] ENV at module load: ' + JSON.stringify({
-  STRIPE_MODE: process.env.STRIPE_MODE,
-  STRIPE_SECRET_KEY_LIVE: process.env.STRIPE_SECRET_KEY_LIVE ? '[set]' : '[not set]',
-  STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST ? '[set]' : '[not set]',
-  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? '[set]' : '[not set]',
-  ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN,
-  NODE_ENV: process.env.NODE_ENV
-}));
-
 const ISSUE_MAP = {};
 for (const issue of ISSUES) {
   if (issue.priceIdLive) {
