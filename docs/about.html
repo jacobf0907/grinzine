@@ -58,7 +58,7 @@
       </p>
       <p>
       Wanna get in touch? Contact us at
-      <a href="mailto:grinmagazinechi@gmail.com">grinmagazinechi@gmail.com</a>
+      <a href="mailto:grinmagazinechi@gmail.com" style="color:#e63946;text-decoration:underline;">grinmagazinechi@gmail.com</a>
       or follow us on social media
       <a href="https://www.instagram.com/grin.zine?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" style="vertical-align:middle;">
   <img src="insta-btn-bw.png" alt="Instagram" style="width:28px;height:28px;border-radius:6px;margin-left:6px;">
@@ -92,17 +92,22 @@
                 </div>
               </div>
             `;
-            document.getElementById("user-email").onclick = function() {
+            document.getElementById("user-email").onclick = function(e) {
+              e.stopPropagation();
               const dd = document.getElementById("logout-dropdown");
               dd.style.display = dd.style.display === "block" ? "none" : "block";
             };
-            document.getElementById("logout-btn").onclick = async function() {
+            document.getElementById("logout-btn").onclick = async function(e) {
+              e.stopPropagation();
               await csrfFetch(`${API_BASE_URL}/auth/logout`, { method: "POST" });
               window.location.href = "login.html";
             };
             document.addEventListener("click", function(e) {
-              if (!e.target.closest("#nav-auth")) {
-                document.getElementById("logout-dropdown").style.display = "none";
+              const dd = document.getElementById("logout-dropdown");
+              if (dd && dd.style.display === "block") {
+                if (!e.target.closest("#logout-dropdown") && !e.target.closest("#user-email")) {
+                  dd.style.display = "none";
+                }
               }
             });
           } else {
@@ -112,7 +117,7 @@
           throw new Error();
         }
       } catch {
-  document.getElementById("nav-auth").innerHTML = `<button style='font-family: \"Londrina Solid\", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
+  document.getElementById("nav-auth").innerHTML = `<button class='default-btn' style='font-family: \"Londrina Solid\", sans-serif;' onclick=\"window.location.href='login.html'\">Login / Signup</button>`;
       }
     }
     updateNavAuth();
@@ -134,7 +139,11 @@
     });
     resetLogoutTimer();
   </script>
-    <p>© 2025 GRIN • For the minds of the disturbed</p>
+    <p>
+      <a href="privacy.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Privacy Policy</a>
+      <a href="terms.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Terms & Conditions</a>
+      <span style="color:#222;">|</span> © 2025 GRIN • For the minds of the disturbed
+    </p>
   </footer>
 </body>
 </html>
