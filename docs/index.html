@@ -19,7 +19,6 @@
     <a href="index.html">
       <img src="images/GrinLogo.png" style="width: 500px; height:auto;">
     </a>
-
       <div class="nav-center">
         <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
         <nav>
@@ -53,69 +52,58 @@
   </script>
     <section class="hero">
 
-  <h2 style="color:#070707;font-family:'cooper-black-std',serif;font-weight:400;font-style:normal;">Thanks for Reading!</h2>
+  <h2 style="color:#070707;font-family:'cooper-black-std',serif;font-weight:400;font-style:normal;">For the Minds of the Disturbed</h2>
 
-        <!-- Rotating image box -->
-        <div style="width:320px;height:400px;margin:24px auto 24px auto;display:flex;align-items:center;justify-content:center;overflow:hidden;background:transparent;position:relative;aspect-ratio:4/5;">
-          <img id="rotating-index-image-1" src="images/purple-guy.png" alt="GRIN Character" style="width:100%;height:100%;object-fit:contain;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:1;">
-          <img id="rotating-index-image-2" src="" alt="GRIN Character" style="width:100%;height:100%;object-fit:contain;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:0;">
-        </div>
+<!-- Manual image carousel box -->
+<div id="carousel-container" class="carousel-container">
+  <button id="carousel-left" class="carousel-arrow" aria-label="Previous image">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 4L8 11L14 18" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <img id="carousel-image" src="images/purple-guy.png" alt="GRIN Character" style="width: 80vw; height: auto; max-width: 80vw; object-fit: contain; display: inline-block;">
+  <button id="carousel-right" class="carousel-arrow" aria-label="Next image">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 4L14 11L8 18" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+  <!-- Carousel styles moved to style.css -->
         <script>
-          const indexImages = [
+          const carouselImages = [
             'images/purple-guy.png',
             'images/four-eyes.png',
             'images/blue-guy.png',
             'images/bug-guy.png',
-            'images/scary-guy.png',
+            'images/scary-guy.PNG',
             'images/red-blue-eyes.png'
           ];
-          let idxCurrent = 0;
-          let idxNext = 1;
-          const idxImg1 = document.getElementById('rotating-index-image-1');
-          const idxImg2 = document.getElementById('rotating-index-image-2');
-          let idxShowingImg1 = true;
-          setInterval(() => {
-            if (idxShowingImg1) {
-              idxImg2.src = indexImages[idxNext];
-              idxImg2.style.opacity = 1;
-              idxImg1.style.opacity = 0;
-            } else {
-              idxImg1.src = indexImages[idxNext];
-              idxImg1.style.opacity = 1;
-              idxImg2.style.opacity = 0;
-            }
+          let carouselIdx = 0;
+          const carouselImg = document.getElementById('carousel-image');
+          document.getElementById('carousel-left').onclick = function() {
+            carouselIdx = (carouselIdx - 1 + carouselImages.length) % carouselImages.length;
+            carouselImg.style.opacity = 0.3;
             setTimeout(() => {
-              idxCurrent = idxNext;
-              idxNext = (idxCurrent + 1) % indexImages.length;
-              idxShowingImg1 = !idxShowingImg1;
-            }, 1200);
-          }, 8000);
+              carouselImg.src = carouselImages[carouselIdx];
+              carouselImg.style.opacity = 1;
+            }, 180);
+          };
+          document.getElementById('carousel-right').onclick = function() {
+            carouselIdx = (carouselIdx + 1) % carouselImages.length;
+            carouselImg.style.opacity = 0.3;
+            setTimeout(() => {
+              carouselImg.src = carouselImages[carouselIdx];
+              carouselImg.style.opacity = 1;
+            }, 180);
+          };
         </script>
         
   <h2 style="color:#070707;font-family:'cooper-black-std',serif;font-weight:400;font-style:normal;">Latest Issue: <em>GRIN Volume 1</em></h2>
         <span id="nav-auth" style="float:right;"></span>
         <div class="cover-image-container">
-          <img src="images/grinzine_issue1_cover.PNG" alt="Grinzine Issue 1 Cover" class="cover-image">
+          <img src="images/grinzine_issue1_cover.PNG" alt="Grinzine Issue 1 Cover" class="cover-image" style="width: 80vw; height: auto; max-width: 80vw; object-fit: contain; display: inline-block;">
         </div>
-        <style>
-          .cover-image-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-          }
-          .cover-image {
-            max-width: 500px;
-            width: 100%;
-            height: auto;
-          }
-          @media (max-width: 700px) {
-            .cover-image {
-              max-width: 90vw;
-            }
-          }
-        </style>
-      </nav>
+
   <button type="button" class="default-btn checkout-btn" style="display:block; margin:20px auto; font-size:1.25rem;" onclick="window.location.href='issues.html'">See All Issues</button>
     </section>
   </main>
