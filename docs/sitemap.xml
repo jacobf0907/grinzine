@@ -29,11 +29,19 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://grinzine.com/payment_success.html</loc>
-    <priority>0.4</priority>
+    <loc>https://grinzine.com/login.html</loc>
+    <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://grinzine.com/payment_cancel.html</loc>
-    <priority>0.4</priority>
+    <loc>https://grinzine.com/signup.html</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://grinzine.com/weeping-interview.html</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://grinzine.com/rosacade-interview.html</loc>
+    <priority>0.7</priority>
   </url>
 </urlset>
