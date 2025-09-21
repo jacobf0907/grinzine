@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview with Rosacade | GRIN Magazine</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <a href="index.html">
+      <img src="images/GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
+    </a>
+    <div class="nav-center">
+      <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="issues.html">Issues</a>
+        <a href="interviews.html">Interviews</a>
+        <a href="my_library.html">My Library</a>
+        <span id="nav-auth" style="float:right;"></span>
+      </nav>
+    </div>
+  </header>
+  <main>
+  <div style="max-width:800px;margin:0 auto;padding:0;background:#fff;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+
+      <h2 class="headings" style="text-align:center;font-family:'Fjalla One',sans-serif;margin-top:32px;margin-bottom:18px;"><br>Interview with Rosacade</h2>
+
+      <!-- Rotating image block -->
+      <div style="width:100%;max-width:400px;aspect-ratio:5/4;height:auto;margin:0 auto 32px auto;display:flex;align-items:center;justify-content:center;overflow:hidden;background:transparent;position:relative;">
+        <img id="rotating-rosacade-image-1" src="images/rosacade-logo.png" alt="Rosacade" style="width:100%;height:100%;object-fit:contain;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:1;">
+        <img id="rotating-rosacade-image-2" src="" alt="Rosacade" style="width:100%;height:100%;object-fit:contain;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:0;">
+      </div>
+      <script>
+        const rosacadeImages = [
+          'images/rosacade-logo.png',
+          'images/rosacade1.jpg',
+          'images/rosacade2.jpg'
+        ];
+        // Preload images
+        rosacadeImages.forEach(src => {
+          const img = new Image();
+          img.src = src;
+        });
+        let rCurrent = 0;
+        let rNext = 1;
+        const rImg1 = document.getElementById('rotating-rosacade-image-1');
+        const rImg2 = document.getElementById('rotating-rosacade-image-2');
+        let rShowingImg1 = true;
+        setInterval(() => {
+          if (rShowingImg1) {
+            rImg2.src = rosacadeImages[rNext];
+            rImg2.style.opacity = 1;
+            rImg1.style.opacity = 0;
+          } else {
+            rImg1.src = rosacadeImages[rNext];
+            rImg1.style.opacity = 1;
+            rImg2.style.opacity = 0;
+          }
+          setTimeout(() => {
+            rCurrent = rNext;
+            rNext = (rCurrent + 1) % rosacadeImages.length;
+            rShowingImg1 = !rShowingImg1;
+          }, 1200);
+        }, 10000);
+      </script>
+      <div style="font-family:'Libre Franklin',sans-serif;font-size:1.08em;max-width:700px;margin:0 auto 32px auto;padding-bottom:16px;">
+        <!-- Interview body text below -->
+        <p>If you haven’t been to a Rosacade show yet, change that IMMEDIATELY. We got to see Rosacade with an amazing lineup of bands in the growing Midwest screamo scene, hosted by Heavy Extreme Midwest fest at the Logan-Avondale VFW.<br><br>
+Always love to see shows go to the roots of DIY with events hosted at VFWs, American Legion halls, etc. In these truly polarizing times, there’s something cathartic about seeing veterans and the typical audience of DIY scenes sharing the same space. Despite the efforts of the pigs in office to divide and control us, spaces like this are a reminder we have more in common than we might think. We’re all striving to live a comfortable and happy life surrounded by kind people that want to uplift one another.<br><br>
+I overheard the bartender talking to one of the VFW members at the bar saying, “It’s still early in the night, but yeah I think I’d do something like this again”. I even saw some regulars make their way back into the stage area and bang their heads to the music. And shoutout Heavy Extreme Midwest for their efforts to foster one of the safest show environments I’ve ever been to.<br><br>
+Among an insane 11 band bill with 2 stages set up side-by-side festival style, Rosacade played the 7:30 timeslot to a packed room. The show starts with the two vocalists’ backs facing the crowd, everyone crowded in around the band on all sides. Guitar comes in first with a fast-picked arpeggiated riff, followed by a pause, and then a fruity “We’re Rosacade”, before mayhem ensues. Fast paced strumming and insane drumming with some fine cymbals. The screams were on point, with both vocalists in the pit the whole time, getting the crowd even more into it. And the thing that sets Rosacade’s music apart are the smooth transitions into a danceable beat for a few bars, before it’s right back into the havoc. Rosacade was a crowd pleaser and truly doing something special for Chicago’s scene.<br><br>
+We chatted with them outside after the set and it was immediately apparent these guys have a great time together doing what they love. All standing in a circle, arms on each other’s shoulders, just happy to be sharing this experience.</p>
+
+<div class="interview">
+  <p><strong>GRIN:</strong> Who is Rosacade?<br>
+  <strong>Roland:</strong> My name’s Roland, I’m a vocalist in Rosacade.<br>
+  <strong>Isaac:</strong> My name is Isaac, I’m the second guitarist.<br>
+  <strong>Alex:</strong> My name is Alex, I’m the bassist.<br>
+  <strong>Abel:</strong> My name is Abel, FKA Scat God, and I’m a vocalist.<br>
+  <strong>Felix:</strong> I’m Felix, I’m the drummer.<br>
+  <strong>Marco:</strong> I’m Marco, I’m the lead guitarist.</p>
+
+  <p><strong>GRIN:</strong> How’d you guys get your start, or what was the start of rosacade?<br>
+  <strong>Roland:</strong> Oh, okay, so it started as a solo project about a year and a half ago now. Just in my bedroom, going through mental shit, whatever, and then I’m like, damn, I want to play shows like, I want to be in a band. And so then, I found the original four members. Then we went through like hella member changes. We still have Glorp (Alex), he’s been the only OG, everyone else is new, but yeah it’s been a crazy journey with the music, like the music we made a year ago is the complete opposite of the music we make now. So it’s kinda chill.</p>
+
+  <p><strong>GRIN:</strong> Is there a story behind the name?<br>
+  <strong>Roland:</strong> Abel and I were on a call when I was trying to figure it out, like I wanted to make a bedroom project, whatever, and I couldn’t think of a name. He was like, bro just look up diseases or some shit. And so then I was looking at diseases and I saw rosacea, I’m like wait that’s fire. And then I misspelled it into Snapchat or something and I saw rosacade and I’m like wait that’s fucking fire. So that’s where it came from, a misspelling of rosacea.</p>
+
+  <p><strong>GRIN:</strong> How do you describe your music to your parents?<br>
+  <strong>Abel:</strong> My mom was just here actually. I say high energy, kind of chaotic, a little feminine, you know what I’m saying? It’s cool<br>
+  <strong>Isaac:</strong> deftones<br>
+  <strong>Marco:</strong> Twink hardcore music</p>
+
+  <p><strong>GRIN:</strong> So with the split you guys put out, what does that collaboration mean to you guys?<br>
+  <strong>All:</strong> Oh Norfair!!<br>
+  <strong>Roland:</strong> They’re our besties, our twins, they mean everything to us. Snowbirds, fucking homies back in Grand Rapids. Yeah and then Silven they’re like the nicest people you’ll ever meet in your life. They’re all so fucking cool and talented ass bands. I want to play with all of them again.</p>
+
+  <p><strong>GRIN:</strong> You’ve gotten to play with all of them?<br>
+  <strong>Roland:</strong> Yeah we’ve played with all of them. We did two split release shows. And we have hella shit coming up with Norfair. Maybe a couple tours or whatever.<br>
+  <strong>Abel:</strong> Shout out Matt</p>
+
+  <p><strong>GRIN:</strong> What are you most excited for with the Chicago screamo scene?<br>
+  <strong>Marco:</strong> I’m excited to play with Jerome, Chicago deathcore legends and Amulet all the way from California. Two of my favorite bands, it’s gonna be a crazy show.<br>
+  <strong>Abel:</strong> Honestly I’m just hype to see a lot of new bands. This scene relies on, I guess just community, and seeing new people out here it’s crazy like I’m seeing faces I ain’t seen before.<br>
+  <strong>Alex:</strong> Spread the positivity, always spread the positivity. I’m so glad this scene is growing. I'm so glad to see new bands coming in and just like hella young people getting involved.<br>
+  <strong>Roland:</strong> There’s so many bands that are getting created from like our friends and people who’ve never met before. And there’s so many new faces at every show we play it’s so cool to be part of this growing community. It’s grown so much since a year ago. It's been awesome.</p>
+
+  <p><strong>GRIN:</strong> Do you have any advice for others wanting to get into doing scream vocals?<br>
+  <strong>Alex:</strong> Just do it<br>
+  <strong>Roland:</strong> Oooh, for me? Just do it. Like deadass.<br>
+  <strong>Alex:</strong> Like nike<br>
+  <strong>Abel:</strong> I mean, make sure you do it right. Like I was drinking straight green tea before this. And don’t scream with your throat.<br>
+  <strong>Roland:</strong> If green tea makes you shit though, warm water is the method.<br>
+  <strong>Alex:</strong> Tea and honey<br>
+  <strong>Marco:</strong> Hot water and honey<br>
+  <strong>Abel:</strong> Shout out Alien for putting us onto the throat coat, that is the metaaa</p>
+
+  <p><strong>GRIN:</strong> Who’s some of your inspirations and influences?<br>
+  Ted Williams, Told Not to Worry, The Number Twelve Looks Like You, Tower of Rome, The Great Redneck Hope, Norfair<br>
+  <strong>Isaac:</strong> deftones<br>
+  <strong>Marco:</strong> deftones yeah deftones<br>
+  <strong>Roland:</strong> No no don’t believe that no no no<br>
+  <strong>Marco:</strong> The band Daughters<br>
+  <strong>Abel:</strong> Oh also I just wanna say probably like American Football lowkey hella<br>
+  <strong>Roland and others:</strong> nsixhundred, really good. Shout out Taja. Sincere,<br>
+  Call me the Boxer, 7ate9, they’re new they’re really cool<br>
+  Hayworth, hope they come back<br>
+  Heavy Heavy Low Low</p>
+
+  <p><strong>GRIN:</strong> Anything you want to plug? You got the show coming up October 18, anything else on the horizon?<br>
+  <strong>Roland:</strong> We’re gonna have hella shit coming in October we got a whole checklist. We’re gonna try to get fidget spinners, bracelets, shirts<br>
+  <strong>Marco:</strong> Roblox shirts<br>
+  <strong>Roland:</strong> We’re gonna have a CD recorded by the time our next show rolls around, but we’ll probably have it released in like December I’m guessing.<br>
+  <strong>Alex:</strong> Tour? Potentially<br>
+  <strong>Abel:</strong> I just wanna say if you aren’t dying in that pit in October, like what are you doing there? Get the fuck out<br>
+  <strong>Marco:</strong> Yeah like I need to see a bloody nose, I need one bloody nose.<br>
+  <strong>Roland:</strong> Someone got hurt this show though so like I’m hoping I can. I feel bad like I don’t want people to get hurt.<br>
+  <strong>Marco:</strong> Shoutout AJ, Kalamazoo<br>
+  <strong>Isaac (mocking Marco):</strong> I need people to get hurt, I’m evil, I’m the prince of darkness</p>
+
+  <hr>
+
+  <h3 style="margin-top:1.5em;">SPEED ROUND</h3>
+
+  <p><strong>Subway Surfers or Temple Run?</strong><br>
+  Band is split shouting Temple Run and Subway Surfers back at each other<br>
+  <strong>Roland:</strong> Subway Surfers is so much better in every way. Temple Run actually looks like poop.<br>
+  <strong>Marco:</strong> It’s not about that bro, think Subway Surfers, you’re being chased by a fat cop. You get caught? You go to jail. Temple Run? YOU FUCK UP YOU DIE, you’re being chased by a fatass monster, you see the fire, you see the logs with the spikes, dude your life is on the line when you’re running in Temple Run! Subway Surfers is shit<br>
+  <strong>Isaac:</strong> So Marco’s just evil dude<br>
+  <strong>Marco:</strong> Temple Run is for real people bro<br>
+  <strong>Isaac:</strong> That’s how you know he listens to deathcore</p>
+
+  <p><strong>Angry Birds or Fruit Ninja?</strong><br>
+  Unanimous Angry Birds</p>
+
+  <p><strong>Fortnite or Warzone?</strong><br>
+  Fortnite, Fortnite, FORTNITE</p>
+
+  <p><strong>Mario or Sonic?</strong><br>
+  MARIO</p>
+
+  <p><strong>Simpsons or Family Guy?</strong><br>
+  <strong>Alex, Isaac, Felix:</strong> Simpsons<br>
+  <strong>Abel, Roland, Marco:</strong> Family Guy<br>
+  <strong>Marco:</strong> Slamily Guy</p>
+
+  <p><strong>Street Fighter or Mortal Kombat?</strong><br>
+  Most jump in right away with Mortal Kombat<br>
+  <strong>Marco:</strong> Wait wait wait, this is really hard, this is a hard question<br>
+  <strong>Roland:</strong> No it’s not bro<br>
+  <strong>Isaac:</strong> Street Fighter 2 is legendary<br>
+  <strong>Marco:</strong> Street Fighter 2 has legendary status, but Mortal Kombat is a better game not gonna lie and the fatalities are so sick</p>
+
+  <p>Thank you to Rosacade for taking their time to do this interview and being part of the ever growing screamo scene in the Midwest. Be on the lookout for new music from them and make sure to get out to their shows!</p>
+</div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <p>
+      <span style="color:#222;"></span> © 2025 GRIN • For the minds of the disturbed
+    </p>
+    <div>
+      <a href="privacy.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Privacy Policy</a>
+      <a href="terms.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Terms & Conditions</a>
+    </div>
+  </footer>
+  <script src="scripts.js"></script>
+</body>
+</html>

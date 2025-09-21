@@ -16,17 +16,18 @@
       <header>
     <h1 style="margin:0;">
       <a href="index.html">
-        <img src="GrinLogo.png" alt="GRIN" style="width:300px;max-width:100%;height:auto;display:block;margin:0 auto;">
+    <img src="images/GrinLogo.png" alt="GRIN" style="width:300px;max-width:100%;height:auto;display:block;margin:0 auto;">
       </a>
     </h1>
     <div class="nav-center">
       <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
       <nav>
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="issues.html">Issues</a>
-        <a href="my_library.html">My Library</a>
-        <span id="nav-auth"></span>
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="issues.html">Issues</a>
+  <a href="interviews.html">Interviews</a>
+  <a href="my_library.html">My Library</a>
+  <span id="nav-auth"></span>
       </nav>
     </div>
       </header>
@@ -58,27 +59,53 @@
      on a USPS sticker somewhere around the city. Cause sometimes you gotta put on a shit-eating grin just to get through the day. So take a break from the doom and
     gloom of this world and indulge with us.
     </p>
+
+    <!-- Rotating image box -->
+    <div style="width:360px;height:360px;margin:24px auto 24px auto;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);background:#fafafa;position:relative;">
+  <img id="rotating-image-1" src="images/checkout-camera.jpg" alt="GRIN Magazine Art" style="width:100%;height:100%;object-fit:cover;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:1;">
+  <img id="rotating-image-2" src="" alt="GRIN Magazine Art" style="width:100%;height:100%;object-fit:cover;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:0;">
+    </div>
+    <script>
+      const rotatingImages = [
+        'images/peace-sign-guy.png',
+        'images/checkout-camera.jpg',
+        'images/table-design.jpg',
+        'images/zine_cover.png'
+      ];
+      let currentImageIdx = 0;
+      let nextImageIdx = 1;
+      const img1 = document.getElementById('rotating-image-1');
+      const img2 = document.getElementById('rotating-image-2');
+      let showingImg1 = true;
+      setInterval(() => {
+        // Preload next image
+        if (showingImg1) {
+          img2.src = rotatingImages[nextImageIdx];
+          img2.style.opacity = 1;
+          img1.style.opacity = 0;
+        } else {
+          img1.src = rotatingImages[nextImageIdx];
+          img1.style.opacity = 1;
+          img2.style.opacity = 0;
+        }
+        setTimeout(() => {
+          currentImageIdx = nextImageIdx;
+          nextImageIdx = (currentImageIdx + 1) % rotatingImages.length;
+          showingImg1 = !showingImg1;
+        }, 1200);
+      }, 8000);
+    </script>
+
     <p>
     Wanna get in touch? Contact us at
     <a href="mailto:grinmagazinechi@gmail.com" style="color:#e63946;text-decoration:underline;">grinmagazinechi@gmail.com</a>
     or follow us on social media
     <a href="https://www.instagram.com/grin.zine?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" style="vertical-align:middle;">
-      <img src="insta-btn-bw.png" alt="Instagram" style="width:28px;height:28px;border-radius:6px;margin-left:6px;">
+      <img src="images/insta-btn-bw.png" alt="Instagram" style="width:28px;height:28px;border-radius:6px;margin-left:6px;">
     </a>
     </p>
   </div>
     </main>
-
-
-
-
-    <footer>
-      <p>
-        <a href="privacy.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Privacy Policy</a>
-        <a href="terms.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Terms & Conditions</a>
-        <span style="color:#222;">|</span> © 2025 GRIN • For the minds of the disturbed
-      </p>
-    </footer>
 
     <script>
       // Ensure csrfFetch is defined (import if missing)
@@ -159,4 +186,13 @@
       resetLogoutTimer();
     </script>
   </body>
+    <footer>
+      <p>
+      <span style="color:#222;"></span> © 2025 GRIN • For the minds of the disturbed
+    </p>
+    <div>
+      <a href="privacy.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Privacy Policy</a>
+      <a href="terms.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Terms & Conditions</a>
+    </div>
+  </footer>
 </html>

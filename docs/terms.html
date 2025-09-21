@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Terms and Conditions | Grinzine</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      overflow-x: hidden;
+    }
+    .terms-main-container {
+      max-width: 100vw;
+      box-sizing: border-box;
+      overflow-x: auto;
+    }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Londrina+Solid:wght@100;300;400;900&family=Pathway+Gothic+One&display=swap" rel="stylesheet">
@@ -12,78 +22,79 @@
 <body>
   <header>
     <a href="index.html">
-      <img src="GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
+      <img src="images/GrinLogo.png" alt="GRIN" style="width: 200px; height:auto;">
     </a>
     <div class="nav-center">
       <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
       <nav>
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="issues.html">Issues</a>
-        <a href="my_library.html">My Library</a>
-        <span id="nav-auth" style="float:right;"></span>
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="issues.html">Issues</a>
+  <a href="interviews.html">Interviews</a>
+  <a href="my_library.html">My Library</a>
+  <span id="nav-auth" style="float:right;"></span>
       </nav>
     </div>
   </header>
   <main>
     <h2 class="headings" style="text-align:center;">Terms and Conditions</h2>
-    <div style="max-width: 800px; width: 100%; margin: 0 auto; font-family: 'Libre Franklin', 'Arial', sans-serif; font-size: 1em; background: #fff; padding: 24px 18px 32px 18px; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);">
+  <div class="terms-main-container" style="max-width: 800px; width: 100%; margin: 0 auto; font-family: 'Libre Franklin', 'Arial', sans-serif; font-size: 1em; background: #fff; padding: 24px 18px 32px 18px; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);">
       <p style="text-align:right; font-size:0.95em; color:#888;">Last updated: <span style="color:#333;">September 14, 2025</span></p>
       <p>Welcome to Grinzine. By accessing or using this website, creating an account, or purchasing any products, you agree to the following Terms and Conditions. Please read them carefully.</p>
-      <ol style="padding-left: 1.2em;">
-        <li style="margin-bottom:12px;">
-          <strong>Accounts</strong><br>
-          To access certain features, including purchasing and viewing digital issues, you may need to create an account.<br>
-          You agree to provide accurate and complete information when registering.<br>
-          You are responsible for maintaining the confidentiality of your account credentials and all activities under your account.
-        </li>
-        <li style="margin-bottom:12px;">
-          <strong>Purchases</strong><br>
-          By purchasing digital issues or other products, you agree to provide accurate payment details and authorize us (via Stripe or other payment processors) to process the transaction.<br>
-          All purchases of digital content are final and non-refundable, except where required by law.<br>
-          Upon successful payment, you will gain access to the purchased digital content in your library.
-        </li>
-        <li style="margin-bottom:12px;">
-          <strong>Intellectual Property</strong><br>
-          All content available on this website, including zines, text, graphics, images, and digital publications, is the exclusive property of Grinzine and protected by copyright law.<br>
-          You may not copy, reproduce, redistribute, or resell any content without prior written permission.<br>
-          Purchasing access to a digital issue grants you a personal, non-transferable license to view it.
-        </li>
-        <li style="margin-bottom:12px;">
-          <strong>User Feedback and Suggestions</strong><br>
-          If you submit feedback, ideas, or suggestions (collectively, “Feedback”), you acknowledge that:<br>
-          Feedback is given voluntarily and without expectation of compensation.<br>
-          We may freely use, reproduce, or incorporate your Feedback into Grinzine’s services or content without credit or payment to you.
-        </li>
-        <li style="margin-bottom:12px;">
-          <strong>Prohibited Conduct</strong><br>
-          You agree not to:<br>
-          Share, resell, or publicly distribute purchased issues.<br>
-          Use this site for unlawful or harmful purposes.<br>
-          Attempt to hack, disrupt, or misuse the service.
-        </li>
-        <li style="margin-bottom:12px;">
-          <strong>Limitation of Liability</strong><br>
-          Grinzine is not liable for interruptions, technical issues, or damages arising from your use of the site or content.<br>
-          All services are provided “as is” without warranties of any kind.
-        </li>
-        <li style="margin-bottom:12px;">
-          <strong>Changes to Terms</strong><br>
-          We may update these Terms at any time. Continued use of the site constitutes acceptance of the updated Terms.
-        </li>
-        <li style="margin-bottom:12px;">
-          <strong>Governing Law</strong><br>
-          These Terms shall be governed by and construed in accordance with the laws of the United States of America.
-        </li>
-      </ol>
+      <div style="margin-bottom:12px;">
+        <strong>Accounts</strong><br>
+        To access certain features, including purchasing and viewing digital issues, you may need to create an account.<br>
+        You agree to provide accurate and complete information when registering.<br>
+        You are responsible for maintaining the confidentiality of your account credentials and all activities under your account.
+      </div>
+      <div style="margin-bottom:12px;">
+        <strong>Purchases</strong><br>
+        By purchasing digital issues or other products, you agree to provide accurate payment details and authorize us (via Stripe or other payment processors) to process the transaction.<br>
+        All purchases of digital content are final and non-refundable, except where required by law.<br>
+        Upon successful payment, you will gain access to the purchased digital content in your library.
+      </div>
+      <div style="margin-bottom:12px;">
+        <strong>Intellectual Property</strong><br>
+        All content available on this website, including zines, text, graphics, images, and digital publications, is the exclusive property of Grinzine and protected by copyright law.<br>
+        You may not copy, reproduce, redistribute, or resell any content without prior written permission.<br>
+        Purchasing access to a digital issue grants you a personal, non-transferable license to view it.
+      </div>
+      <div style="margin-bottom:12px;">
+        <strong>User Feedback and Suggestions</strong><br>
+        If you submit feedback, ideas, or suggestions (collectively, “Feedback”), you acknowledge that:<br>
+        Feedback is given voluntarily and without expectation of compensation.<br>
+        We may freely use, reproduce, or incorporate your Feedback into Grinzine’s services or content without credit or payment to you.
+      </div>
+      <div style="margin-bottom:12px;">
+        <strong>Prohibited Conduct</strong><br>
+        You agree not to:<br>
+        Share, resell, or publicly distribute purchased issues.<br>
+        Use this site for unlawful or harmful purposes.<br>
+        Attempt to hack, disrupt, or misuse the service.
+      </div>
+      <div style="margin-bottom:12px;">
+        <strong>Limitation of Liability</strong><br>
+        Grinzine is not liable for interruptions, technical issues, or damages arising from your use of the site or content.<br>
+        All services are provided “as is” without warranties of any kind.
+      </div>
+      <div style="margin-bottom:12px;">
+        <strong>Changes to Terms</strong><br>
+        We may update these Terms at any time. Continued use of the site constitutes acceptance of the updated Terms.
+      </div>
+      <div style="margin-bottom:12px;">
+        <strong>Governing Law</strong><br>
+        These Terms shall be governed by and construed in accordance with the laws of the United States of America.
+      </div>
     </div>
   </main>
   <footer>
-    <p>
-      <a href="privacy.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Privacy Policy</a>
-      <a href="terms.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Terms & Conditions</a>
-      <span style="color:#222;">|</span> © 2025 GRIN • For the minds of the disturbed
-    </p>
+      <p>
+        <span style="color:#222;"></span> © 2025 GRIN • For the minds of the disturbed
+      </p>
+      <div>
+        <a href="privacy.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Privacy Policy</a>
+        <a href="terms.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Terms & Conditions</a>
+      </div>
   </footer>
 </body>
 </html>

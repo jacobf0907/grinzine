@@ -17,21 +17,21 @@
 <body>
   <header>
     <a href="index.html">
-      <img src="GrinLogo.png" style="width: 500px; height:auto;">
+      <img src="images/GrinLogo.png" style="width: 500px; height:auto;">
     </a>
 
       <div class="nav-center">
         <button class="nav-toggle" aria-label="Open menu" style="display:none;">&#9776;</button>
         <nav>
-          <a href="index.html">Home</a>
-          <a href="about.html">About</a>
-          <a href="issues.html">Issues</a>
-          <a href="my_library.html">My Library</a>
-          <span id="nav-auth" style="float:right;"></span>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="issues.html">Issues</a>
+    <a href="interviews.html">Interviews</a>
+    <a href="my_library.html">My Library</a>
+    <span id="nav-auth" style="float:right;"></span>
         </nav>
       </div>
   </header>
-
   <main>
   <script>
     const navToggle = document.querySelector('.nav-toggle');
@@ -52,10 +52,50 @@
     document.addEventListener('DOMContentLoaded', checkMobile);
   </script>
     <section class="hero">
+
+  <h2 style="color:#070707;font-family:'cooper-black-std',serif;font-weight:400;font-style:normal;">Thanks for Reading!</h2>
+
+        <!-- Rotating image box -->
+        <div style="width:320px;height:400px;margin:24px auto 24px auto;display:flex;align-items:center;justify-content:center;overflow:hidden;background:transparent;position:relative;aspect-ratio:4/5;">
+          <img id="rotating-index-image-1" src="images/purple-guy.png" alt="GRIN Character" style="width:100%;height:100%;object-fit:contain;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:1;">
+          <img id="rotating-index-image-2" src="" alt="GRIN Character" style="width:100%;height:100%;object-fit:contain;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:0;">
+        </div>
+        <script>
+          const indexImages = [
+            'images/purple-guy.png',
+            'images/four-eyes.png',
+            'images/blue-guy.png',
+            'images/bug-guy.png',
+            'images/scary-guy.png',
+            'images/red-blue-eyes.png'
+          ];
+          let idxCurrent = 0;
+          let idxNext = 1;
+          const idxImg1 = document.getElementById('rotating-index-image-1');
+          const idxImg2 = document.getElementById('rotating-index-image-2');
+          let idxShowingImg1 = true;
+          setInterval(() => {
+            if (idxShowingImg1) {
+              idxImg2.src = indexImages[idxNext];
+              idxImg2.style.opacity = 1;
+              idxImg1.style.opacity = 0;
+            } else {
+              idxImg1.src = indexImages[idxNext];
+              idxImg1.style.opacity = 1;
+              idxImg2.style.opacity = 0;
+            }
+            setTimeout(() => {
+              idxCurrent = idxNext;
+              idxNext = (idxCurrent + 1) % indexImages.length;
+              idxShowingImg1 = !idxShowingImg1;
+            }, 1200);
+          }, 8000);
+        </script>
+        
   <h2 style="color:#070707;font-family:'cooper-black-std',serif;font-weight:400;font-style:normal;">Latest Issue: <em>GRIN Volume 1</em></h2>
         <span id="nav-auth" style="float:right;"></span>
         <div class="cover-image-container">
-          <img src="grinzine_issue1_cover.PNG" alt="Grinzine Issue 1 Cover" class="cover-image">
+          <img src="images/grinzine_issue1_cover.PNG" alt="Grinzine Issue 1 Cover" class="cover-image">
         </div>
         <style>
           .cover-image-container {
@@ -143,10 +183,12 @@
 </script>
   <footer>
     <p>
+      <span style="color:#222;"></span> © 2025 GRIN • For the minds of the disturbed
+    </p>
+    <div>
       <a href="privacy.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Privacy Policy</a>
       <a href="terms.html" style="color:#e63946;text-decoration:underline;margin-right:18px;">Terms & Conditions</a>
-      <span style="color:#222;">|</span> © 2025 GRIN • For the minds of the disturbed
-    </p>
+    </div>
   </footer>
 </body>
 </html>

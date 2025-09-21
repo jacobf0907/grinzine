@@ -10,3 +10,7 @@ node_modules/
 
 # Ignore pdf files
 pdfs/
+
+# Ignore archive
+Archive (Express)/
+
