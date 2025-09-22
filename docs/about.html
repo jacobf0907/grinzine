@@ -6,6 +6,11 @@
   <meta name="keywords" content="GRIN, about, magazine, team, mission">
   <link rel="canonical" href="https://grinzine.com/about.html">
   <meta name="robots" content="index, follow">
+    <!-- Preload about page carousel images for performance -->
+    <link rel="preload" as="image" href="images/peace-sign-guy.png">
+    <link rel="preload" as="image" href="images/checkout-camera.jpg">
+    <link rel="preload" as="image" href="images/table-design.jpg">
+    <link rel="preload" as="image" href="images/zine_cover.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,39 +71,45 @@
     </p>
 
     <!-- Rotating image box -->
-    <div style="width:360px;height:360px;margin:24px auto 24px auto;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);background:#fafafa;position:relative;">
-  <img id="rotating-image-1" src="images/checkout-camera.jpg" alt="GRIN Magazine Art" style="width:100%;height:100%;object-fit:cover;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:1;">
-  <img id="rotating-image-2" src="" alt="GRIN Magazine Art" style="width:100%;height:100%;object-fit:cover;transition:opacity 1.2s;position:absolute;left:0;top:0;opacity:0;">
+    <!-- Manual image carousel box -->
+    <div id="about-carousel-container" style="width:360px;height:360px;margin:24px auto;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);background:#fafafa;position:relative;">
+      <button id="about-carousel-left" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.4);border:none;border-radius:50%;width:36px;height:36px;z-index:2;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 4L8 11L14 18" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <img id="about-carousel-image" src="images/checkout-camera.jpg" alt="GRIN Magazine Art" style="width:100%;height:100%;object-fit:cover;transition:opacity 0.6s;display:block;">
+      <button id="about-carousel-right" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.4);border:none;border-radius:50%;width:36px;height:36px;z-index:2;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 4L14 11L8 18" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
     <script>
-      const rotatingImages = [
+      const aboutCarouselImages = [
         'images/peace-sign-guy.png',
         'images/checkout-camera.jpg',
         'images/table-design.jpg',
         'images/zine_cover.png'
       ];
-      let currentImageIdx = 0;
-      let nextImageIdx = 1;
-      const img1 = document.getElementById('rotating-image-1');
-      const img2 = document.getElementById('rotating-image-2');
-      let showingImg1 = true;
-      setInterval(() => {
-        // Preload next image
-        if (showingImg1) {
-          img2.src = rotatingImages[nextImageIdx];
-          img2.style.opacity = 1;
-          img1.style.opacity = 0;
-        } else {
-          img1.src = rotatingImages[nextImageIdx];
-          img1.style.opacity = 1;
-          img2.style.opacity = 0;
-        }
+      let aboutCarouselIdx = 1;
+      const aboutCarouselImg = document.getElementById('about-carousel-image');
+      document.getElementById('about-carousel-left').onclick = function() {
+        aboutCarouselIdx = (aboutCarouselIdx - 1 + aboutCarouselImages.length) % aboutCarouselImages.length;
+        aboutCarouselImg.style.opacity = 0.3;
         setTimeout(() => {
-          currentImageIdx = nextImageIdx;
-          nextImageIdx = (currentImageIdx + 1) % rotatingImages.length;
-          showingImg1 = !showingImg1;
-        }, 1200);
-      }, 8000);
+          aboutCarouselImg.src = aboutCarouselImages[aboutCarouselIdx];
+          aboutCarouselImg.style.opacity = 1;
+        }, 180);
+      };
+      document.getElementById('about-carousel-right').onclick = function() {
+        aboutCarouselIdx = (aboutCarouselIdx + 1) % aboutCarouselImages.length;
+        aboutCarouselImg.style.opacity = 0.3;
+        setTimeout(() => {
+          aboutCarouselImg.src = aboutCarouselImages[aboutCarouselIdx];
+          aboutCarouselImg.style.opacity = 1;
+        }, 180);
+      };
     </script>
 
     <p>
