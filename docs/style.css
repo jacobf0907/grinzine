@@ -1,3 +1,12 @@
+#about-carousel-container button {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+#about-carousel-container:hover button {
+  opacity: 1;
+  pointer-events: auto;
+}
 .primal-heading {
   color: #070707;
   font-family: 'cc-primal-scream', sans-serif;
@@ -506,11 +515,13 @@ main {
   margin-top: 10px;
   border-radius: 5px;
   font-family: "Londrina Solid", sans-serif;
+  text-decoration: none;
 }
 
 .default-btn:hover {
   background-color: #f1faee;
   color: #333;
+  text-decoration: underline;
 }
 
 .paywall-link {
