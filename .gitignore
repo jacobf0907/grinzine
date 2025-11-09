@@ -14,3 +14,5 @@ pdfs/
 # Ignore archive
 Archive (Express)/
 
+# ignore copilot-instructions
+copilot-instructions.md/
