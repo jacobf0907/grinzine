@@ -18,7 +18,12 @@ const ISSUES = [
     title: 'Grin Magazine Issue #1',
     pdfPath: '/pdfs/grin-magazine-volume-one-web.pdf'
   },
-  // Add more issues here as needed
+  {
+    priceIdLive: 'price_1SZ1QDF8I4vGxQh7Ivk0BhUv',
+    priceIdTest: 'price_1SZIszJulbntxSe8RJNe7KFq',
+    title: 'Grin Magazine Issue #2',
+    pdfPath: '/data/pdfs/grinzine_issue_2_web.pdf'  // Must match mount point
+  },
 ];
 
 module.exports = { ISSUES };
