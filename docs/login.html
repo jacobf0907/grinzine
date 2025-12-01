@@ -78,7 +78,7 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const API_BASE_URL =
-        window.location.hostname === "localhost"
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
             ? "http://localhost:4242"
             : "https://api.grinzine.com";
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -107,7 +107,7 @@
       e.preventDefault();
       const email = document.getElementById("reset-email").value;
       const API_BASE_URL =
-        window.location.hostname === "localhost"
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
             ? "http://localhost:4242"
             : "https://api.grinzine.com";
       document.getElementById("reset-message").textContent = "Sending reset link...";
