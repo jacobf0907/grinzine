@@ -123,23 +123,32 @@
               button.textContent = 'Redirecting...';
 
               try {
+                // Ensure csrfFetch is available
+                if (typeof csrfFetch !== 'function') {
+                  throw new Error('CSRF helper not loaded');
+                }
+                
                 const res = await csrfFetch(`${API_BASE_URL}/create-checkout-session`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ issueId }),
+                  body: JSON.stringify({ issueId: parseInt(issueId) }),
                   credentials: "include"
                 });
+                
+                if (!res.ok) {
+                  const errorData = await res.json().catch(() => ({}));
+                  throw new Error(errorData.error || `Server error: ${res.status}`);
+                }
+                
                 const data = await res.json();
-                if (res.ok && data.url) {
+                if (data.url) {
                   window.location.href = data.url;
                 } else {
-                  alert(data.error || "Error creating checkout session");
-                  button.disabled = false;
-                  button.textContent = `Unlock Issue ${issue.id}`;
+                  throw new Error("No checkout URL returned");
                 }
               } catch (err) {
                 console.error('Error:', err);
-                alert("Error connecting to server");
+                alert(err.message || "Error connecting to server");
                 button.disabled = false;
                 button.textContent = `Unlock Issue ${issue.id}`;
               }
