@@ -70,6 +70,40 @@
       window.addEventListener('resize', checkMobile);
       document.addEventListener('DOMContentLoaded', checkMobile);
 
+      // Load and render issues from issues.json
+      async function loadIssues() {
+        try {
+          const response = await fetch('issues.json');
+          const issues = await response.json();
+          const container = document.getElementById('issues-container');
+          
+          issues.forEach(issue => {
+            const article = document.createElement('article');
+            article.className = 'issue';
+            
+            const img = document.createElement('img');
+            img.src = issue.coverImage;
+            img.alt = `Issue ${issue.id} Cover`;
+            
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'default-btn checkout-btn';
+            button.setAttribute('data-price-id', issue.priceIdLive);
+            button.setAttribute('data-issue-id', issue.id);
+            button.style.display = 'block';
+            button.style.margin = '0 auto';
+            button.textContent = `Unlock Issue ${issue.id}`;
+            
+            article.appendChild(img);
+            article.appendChild(button);
+            container.appendChild(article);
+          });
+        } catch (err) {
+          console.error('Error loading issues:', err);
+        }
+      }
+      loadIssues();
+
       // For each issue, show 'View This Issue' if purchased, otherwise show 'Unlock This Issue'
       document.addEventListener('DOMContentLoaded', async () => {
         const API_BASE_URL = 
@@ -118,48 +152,8 @@
       });
     </script>
 
-    <section class="issues">
-
-      <!-- Issue 1 -->
-      <article class="issue">
-        <img src="images/grinzine_issue1_cover.PNG" alt="Issue 1 Cover">
-        <button 
-          type="button" 
-          class="default-btn checkout-btn" 
-          data-price-id="price_1S2bHIF8I4vGxQh7byJ1ky6x" 
-          data-issue-id="1"
-          style="display:block; margin:0 auto;">
-          Unlock Issue 1
-        </button>
-      </article>
-
-      <!-- Issue 2 -->
-      <article class="issue">
-        <img src="images/Issue2-cover.png" alt="Issue 2 Cover">
-        <button 
-          type="button" 
-          class="default-btn checkout-btn" 
-          data-price-id="price_1SZ1QDF8I4vGxQh7Ivk0BhUv" 
-          data-issue-id="2"
-          style="display:block; margin:0 auto;">
-          Unlock Issue 2
-        </button>
-      </article>
-
-      <!--
-      Example: add Issue 2
-      <article class="issue">
-        <img src="grinzine_issue2_cover.PNG" alt="Issue 2 Cover">
-        <button 
-          type="button" 
-          class="default-btn checkout-btn"
-          data-price-id="price_XXXXXXXXXXXX" 
-          style="display:block; margin:0 auto;">
-          Unlock This Issue
-        </button>
-      </article>
-      -->
-
+    <section class="issues" id="issues-container">
+      <!-- Issues will be loaded dynamically from issues.json -->
     </section>
   </main>
 

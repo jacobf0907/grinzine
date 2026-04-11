@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "priceIdLive": "price_1S2bHIF8I4vGxQh7byJ1ky6x",
+    "priceIdTest": "price_1RugTbJulbntxSe8oz8G1wql",
+    "title": "Grin Magazine Issue #1",
+    "pdfPath": "/pdfs/grin-magazine-volume-one-web.pdf",
+    "coverImage": "images/grinzine_issue1_cover.PNG"
+  },
+  {
+    "id": 2,
+    "priceIdLive": "price_1SZ1QDF8I4vGxQh7Ivk0BhUv",
+    "priceIdTest": "price_1SZIszJulbntxSe8RJNe7KFq",
+    "title": "Grin Magazine Issue #2",
+    "pdfPath": "/data/pdfs/grinzine_issue_2_web.pdf",
+    "coverImage": "images/Issue2-cover.png"
+  },
+  {
+    "id": 3,
+    "priceIdLive": "price_1TL3hSF8I4vGxQh7KjJgYPTY",
+    "priceIdTest": "price_1TL4yOJulbntxSe8DRB4Hp8D",
+    "title": "Grin Magazine Issue #3",
+    "pdfPath": "/pdfs/grinzine-issue-3.pdf",
+    "coverImage": "images/issue3cover.png"
+  }
+]
