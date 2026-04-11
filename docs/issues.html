@@ -93,7 +93,6 @@
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'default-btn checkout-btn';
-            button.setAttribute('data-price-id', issue.priceIdLive);
             button.setAttribute('data-issue-id', issue.id);
             button.style.display = 'block';
             button.style.margin = '0 auto';
@@ -102,7 +101,7 @@
             // Attach click handler directly to button
             button.addEventListener('click', async (event) => {
               event.preventDefault();
-              const priceId = button.getAttribute('data-price-id');
+              const issueId = button.getAttribute('data-issue-id');
 
               // Check login status
               let loggedIn = false;
@@ -115,7 +114,7 @@
               } catch {}
 
               if (!loggedIn) {
-                sessionStorage.setItem('pendingUnlock', priceId);
+                sessionStorage.setItem('pendingUnlock', issueId);
                 window.location.href = "login.html";
                 return;
               }
@@ -127,7 +126,7 @@
                 const res = await csrfFetch(`${API_BASE_URL}/create-checkout-session`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ priceId }),
+                  body: JSON.stringify({ issueId }),
                   credentials: "include"
                 });
                 const data = await res.json();
@@ -300,7 +299,7 @@ resetLogoutTimer();
       if (loggedIn) {
         // Wait a bit for buttons to load
         setTimeout(() => {
-          const btn = document.querySelector(`.checkout-btn[data-price-id="${pendingUnlock}"]`);
+          const btn = document.querySelector(`.checkout-btn[data-issue-id="${pendingUnlock}"]`);
           if (btn) {
             btn.click();
             sessionStorage.removeItem('pendingUnlock');
